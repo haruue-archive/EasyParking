@@ -8,6 +8,8 @@ buildscript {
         min_sdk_version = 21
         kotlin_version = '1.2.10'
         support_version = '27.1.0'
+        architecture_version = '1.1.0'
+        room_version = '1.0.0'
     }
     repositories {
         google()
