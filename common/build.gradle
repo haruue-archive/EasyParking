@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -6,7 +6,6 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion target_sdk_version
     defaultConfig {
-        applicationId "moe.haruue.ep"
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
         versionCode version_code
@@ -16,23 +15,13 @@ android {
     dataBinding {
         enabled true
     }
-    signingConfigs {
-        sign
-    }
     buildTypes {
-        debug {
-            signingConfig signingConfigs.sign
-        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.sign
         }
     }
-}
 
-kapt {
-    generateStubs = true
 }
 
 dependencies {
@@ -42,25 +31,22 @@ dependencies {
     //noinspection GradleCompatible
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':common')
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    api "androidx.core:core-ktx:$ktx_version"
+    api "com.android.support:appcompat-v7:$support_version"
+    api "android.arch.lifecycle:extensions:$architecture_version"
+    api "android.arch.lifecycle:viewmodel:$architecture_version"
+    api "android.arch.lifecycle:livedata:$architecture_version"
     kapt "android.arch.lifecycle:compiler:$architecture_version"
+    api "android.arch.persistence.room:runtime:$room_version"
     kapt "android.arch.persistence.room:compiler:$room_version"
+    api "android.arch.paging:runtime:1.0.0-alpha6"
     kapt "com.android.databinding:compiler:$android_plugin_version"
-}
-
-def ksFile = rootProject.file('signing.properties')
-def props = new Properties()
-if (ksFile.canRead()) {
-    props.load(new FileInputStream(ksFile))
-    if (props != null) {
-        android.signingConfigs.sign.storeFile file(props['KEYSTORE_FILE'])
-        android.signingConfigs.sign.storePassword props['KEYSTORE_PASSWORD']
-        android.signingConfigs.sign.keyAlias props['KEYSTORE_ALIAS']
-        android.signingConfigs.sign.keyPassword props['KEYSTORE_ALIAS_PASSWORD']
-    } else {
-        println 'some entries in \'signing.properties\' not found!'
-    }
-} else {
-    println '\'signing.properties\' not found!'
+    api "com.google.code.gson:gson:$gson_version"
+    api "com.squareup.retrofit2:retrofit:$retrofit_version"
+    api "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    api "io.reactivex:rxandroid:$rxandroid_version"
+    api "io.reactivex:rxjava:$rxjava_version"
 }

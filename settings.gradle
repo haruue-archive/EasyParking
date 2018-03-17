@@ -1,1 +1,1 @@
-include ':client', ':manager'
+include ':client', ':manager', ':common'
