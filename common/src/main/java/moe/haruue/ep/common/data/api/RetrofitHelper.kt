@@ -8,6 +8,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import rx.Observable
+import rx.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 /**
@@ -56,4 +58,35 @@ fun <T> createRetrofitService(context: Context,
         retrofitMap[baseUrl] = retrofit
     }
     return retrofit!!.create(service)
+}
+
+open class APIServiceHolder<S>(
+        val clazz: Class<S>,
+        val baseUrl: String
+) {
+    private var v1: S? = null
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun getServiceSync(context: Context): S {
+        if (v1 == null) {
+            synchronized(this) {
+                if (v1 == null) {
+                    v1 = createRetrofitService(context.applicationContext,
+                            clazz, baseUrl)
+                }
+            }
+        }
+        return v1!!
+    }
+
+    fun <T> with(context: Context, block: (service: S) -> Observable<T>): Observable<T> {
+        return Observable.unsafeCreate<S> {
+            try {
+                it.onNext(getServiceSync(context))
+            } catch (e: Throwable) {
+                it.onError(e)
+            }
+            it.onCompleted()
+        }.flatMap { block(it) }.subscribeOn(Schedulers.io())
+    }
 }
