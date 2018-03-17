@@ -12,6 +12,7 @@ android {
         versionCode version_code
         versionName version_name
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "SERVER_URL", "\"$server_base_url\""
     }
     dataBinding {
         enabled true
