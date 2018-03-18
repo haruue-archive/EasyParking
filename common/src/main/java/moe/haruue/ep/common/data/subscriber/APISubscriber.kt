@@ -12,14 +12,21 @@ import moe.haruue.ep.common.util.debug
 import moe.haruue.ep.common.util.release
 import moe.haruue.ep.common.util.toast
 import retrofit2.HttpException
+import rx.Observable
 import rx.Subscriber
+import rx.Subscription
 import java.io.IOException
 
 typealias OnErrorCallback<T> = (e: T) -> Unit
 typealias OnNextCallback<T> = (t: T) -> Unit
 typealias OnCompleteCallback = () -> Unit
 
-inline fun <reified T> apiSubscriberOf(block: APISubscriber.Builder<T>.() -> Unit): APISubscriber<T> {
+inline fun <reified T> Observable<T>.apiSubscribe(
+        block: APISubscriber.Builder<T>.() -> Unit): Subscription
+    = this.subscribe(moe.haruue.ep.common.data.subscriber.apiSubscriberOf(block))
+
+inline fun <reified T> apiSubscriberOf(
+        block: APISubscriber.Builder<T>.() -> Unit): APISubscriber<T> {
     val builder = APISubscriber.Builder<T>()
     builder.block()
     return builder.build()
