@@ -57,27 +57,27 @@ class APISubscriber<T> private constructor(
     class Builder<T> {
         var context: Context? = null
         var where: String = ""
-        var onStartCallback: OnCompleteCallback? = null
-        var onNextCallback: OnNextCallback<T>? = null
-        var onErrorCallback: OnErrorCallback<Throwable>? = null
-        var onAPIErrorCallback: OnErrorCallback<APIError>? = null
-        var onNetworkErrorCallback: OnErrorCallback<IOException>? = null
-        var onOtherErrorCallback: OnErrorCallback<Throwable>? = null
-        var onCompleteCallback: OnCompleteCallback? = null
-        var onFinallyCallback: OnCompleteCallback? = null
+        var onStart: OnCompleteCallback? = null
+        var onNext: OnNextCallback<T>? = null
+        var onError: OnErrorCallback<Throwable>? = null
+        var onAPIError: OnErrorCallback<APIError>? = null
+        var onNetworkError: OnErrorCallback<IOException>? = null
+        var onOtherError: OnErrorCallback<Throwable>? = null
+        var onComplete: OnCompleteCallback? = null
+        var onFinally: OnCompleteCallback? = null
 
         fun build(): APISubscriber<T> {
             return APISubscriber(
                     context,
                     where,
-                    onStartCallback,
-                    onNextCallback,
-                    onErrorCallback,
-                    onAPIErrorCallback,
-                    onNetworkErrorCallback,
-                    onOtherErrorCallback,
-                    onCompleteCallback,
-                    onFinallyCallback
+                    onStart,
+                    onNext,
+                    onError,
+                    onAPIError,
+                    onNetworkError,
+                    onOtherError,
+                    onComplete,
+                    onFinally
             )
         }
     }
