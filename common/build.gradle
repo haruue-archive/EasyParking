@@ -52,4 +52,6 @@ dependencies {
     api "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
     api "io.reactivex:rxandroid:$rxandroid_version"
     api "io.reactivex:rxjava:$rxjava_version"
+    api "moe.haruue.kotlin:utils:$haruue_kotlin_utils_version"
+    api "moe.haruue.kotlin:utils-support:$haruue_kotlin_utils_version"
 }
