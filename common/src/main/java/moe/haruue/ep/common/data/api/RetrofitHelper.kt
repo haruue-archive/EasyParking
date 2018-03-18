@@ -73,7 +73,7 @@ open class APIServiceHolder<S>(
         if (v1 == null) {
             synchronized(this) {
                 if (v1 == null) {
-                    v1 = createRetrofitService(context!!.applicationContext,
+                    v1 = createRetrofitService(ApplicationContextHandler.context!!,
                             clazz, baseUrl)
                 }
             }
