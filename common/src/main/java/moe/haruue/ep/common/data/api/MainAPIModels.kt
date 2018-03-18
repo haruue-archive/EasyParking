@@ -13,7 +13,7 @@ data class APIResult<T>(
         @SerializedName("data") val data: T
 )
 
-data class APIError<T>(
+data class APIError(
         @SerializedName("code") val code: Int,
         @SerializedName("status") val status: String,
         @SerializedName("message") val message: String,

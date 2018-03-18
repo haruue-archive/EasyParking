@@ -13,8 +13,18 @@ private fun Context.debugMode(): Boolean {
     return info.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
 }
 
-fun debug(context: Context, r: () -> Unit) {
-    if (context.debugMode()) {
+fun debug(context: Context? = null, r: () -> Unit) {
+    ApplicationContextHandler.context = context
+    if (isDebug) {
         r()
     }
 }
+
+fun release(context: Context? = null, r: () -> Unit) {
+    if (!isDebug) {
+        r()
+    }
+}
+
+var isDebug: Boolean = false
+    get() = field || ApplicationContextHandler.context?.debugMode() ?: false
