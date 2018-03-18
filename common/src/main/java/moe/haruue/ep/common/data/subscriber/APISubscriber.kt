@@ -15,17 +15,17 @@ import retrofit2.HttpException
 import rx.Subscriber
 import java.io.IOException
 
-        /**
- *
- * @author Haruue Icymoon haruue@caoyue.com.cn
- */
-
 typealias OnErrorCallback<T> = (e: T) -> Unit
 typealias OnNextCallback<T> = (t: T) -> Unit
 typealias OnCompleteCallback = () -> Unit
 
+inline fun <reified T> apiSubscriberOf(block: APISubscriber.Builder<T>.() -> Unit): APISubscriber<T> {
+    val builder = APISubscriber.Builder<T>()
+    builder.block()
+    return builder.build()
+}
 
-open class APISubscriber<T> private constructor(
+class APISubscriber<T> private constructor(
         context: Context?,
         val where: String,
         val onStartCallback: OnCompleteCallback?,
@@ -49,9 +49,6 @@ open class APISubscriber<T> private constructor(
 
     class Builder<T> {
         var context: Context? = null
-            set(value) {
-                field = value?.applicationContext
-            }
         var where: String = ""
         var onStartCallback: OnCompleteCallback? = null
         var onNextCallback: OnNextCallback<T>? = null
