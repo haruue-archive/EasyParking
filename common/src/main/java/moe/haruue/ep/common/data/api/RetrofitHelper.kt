@@ -2,6 +2,7 @@ package moe.haruue.ep.common.data.api
 
 import android.content.Context
 import moe.haruue.ep.common.data.cookie.FileCookieJar
+import moe.haruue.ep.common.util.ApplicationContextHandler
 import moe.haruue.ep.common.util.debug
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -67,11 +68,12 @@ open class APIServiceHolder<S>(
     private var v1: S? = null
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getServiceSync(context: Context): S {
+    fun getServiceSync(context: Context? = null): S {
+        ApplicationContextHandler.context = context
         if (v1 == null) {
             synchronized(this) {
                 if (v1 == null) {
-                    v1 = createRetrofitService(context.applicationContext,
+                    v1 = createRetrofitService(context!!.applicationContext,
                             clazz, baseUrl)
                 }
             }
@@ -79,7 +81,7 @@ open class APIServiceHolder<S>(
         return v1!!
     }
 
-    fun <T> with(context: Context, block: (service: S) -> Observable<T>): Observable<T> {
+    fun <T> with(context: Context? = null, block: (service: S) -> Observable<T>): Observable<T> {
         return Observable.unsafeCreate<S> {
             try {
                 it.onNext(getServiceSync(context))
