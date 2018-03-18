@@ -11,7 +11,7 @@ import android.content.Context
 object ApplicationContextHandler {
     var context: Context? = null
         set(value) {
-            if (field != null && value != null) {
+            if (field == null && value != null) {
                 field = value.applicationContext
             }
         }
