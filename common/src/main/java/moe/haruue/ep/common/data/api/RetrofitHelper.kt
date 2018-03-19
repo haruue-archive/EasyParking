@@ -28,7 +28,7 @@ private fun buildClient(context: Context) {
             followSslRedirects(true)
             readTimeout(10, TimeUnit.SECONDS)
             writeTimeout(10, TimeUnit.SECONDS)
-            connectTimeout(10, TimeUnit.SECONDS)
+            connectTimeout(5, TimeUnit.SECONDS)
             debug(context) {
                 addInterceptor(HttpLoggingInterceptor())
             }

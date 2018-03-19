@@ -15,6 +15,7 @@ import retrofit2.HttpException
 import rx.Observable
 import rx.Subscriber
 import rx.Subscription
+import rx.android.schedulers.AndroidSchedulers
 import java.io.IOException
 
 typealias OnErrorCallback<T> = (e: T) -> Unit
@@ -22,12 +23,15 @@ typealias OnNextCallback<T> = (t: T) -> Unit
 typealias OnCompleteCallback = () -> Unit
 
 inline fun <reified T> Observable<T>.apiSubscribe(
+        where: String,
         block: APISubscriber.Builder<T>.() -> Unit): Subscription
-    = this.subscribe(moe.haruue.ep.common.data.subscriber.apiSubscriberOf(block))
+    = this.subscribe(moe.haruue.ep.common.data.subscriber.apiSubscriberOf(where, block))
 
 inline fun <reified T> apiSubscriberOf(
+        where: String,
         block: APISubscriber.Builder<T>.() -> Unit): APISubscriber<T> {
     val builder = APISubscriber.Builder<T>()
+    builder.where = where
     builder.block()
     return builder.build()
 }
@@ -131,11 +135,15 @@ class APISubscriber<T> private constructor(
     }
 
     override fun onError(e: Throwable) {
-        onErrorCallback?.invoke(e)
-        when (e) {
-            is HttpException -> onAPIError(e.readAPIError())
-            is IOException -> onNetworkError(e)
-            else -> onOtherError(e)
+        try {
+            onErrorCallback?.invoke(e)
+            when (e) {
+                is HttpException -> onAPIError(e.readAPIError())
+                is IOException -> onNetworkError(e)
+                else -> onOtherError(e)
+            }
+        } catch (e: Exception) {
+            loge("exception in onError()", e)
         }
         onFinally()
     }
@@ -145,25 +153,28 @@ class APISubscriber<T> private constructor(
         if (body != null) {
             val bodyString = body.string()
             if (!bodyString.isNullOrBlank()) {
-                val err = gson.fromJson(bodyString, APIError::class.java)
-                if (err.errno > 0) {
+                var err: APIError? = null
+                try {
+                    err = gson.fromJson(bodyString, APIError::class.java)
+                } catch (_: Exception) {}
+                if (err != null && err.errno > 0) {
                     return err
                 }
             }
-            return APIError(this.code(), "error", "服务器返回未知错误: ${code()} $bodyString", -1, "toast")
+            return APIError(code(), "error", "服务器返回未知错误: ${code()}/${message()}: $bodyString", -1, "toast")
         }
-        return APIError(this.code(), "error", "服务器返回未知错误: ${code()}", -1, "toast")
+        return APIError(code(), "error", "服务器返回未知错误: ${code()}/${message()}", -1, "toast")
     }
 
     private fun logd(f: String, vararg args: Any?) {
         debug {
-            Log.d(TAG, "$where: ${f.format(args)}")
+            Log.d(TAG, "$where: ${f.format(*args)}")
         }
     }
 
     private fun logde(f: String, throwable: Throwable? = null, vararg args: Any?) {
         debug {
-            loge(f.format(args), throwable)
+            loge(f.format(*args), throwable)
         }
     }
 
@@ -176,13 +187,15 @@ class APISubscriber<T> private constructor(
     }
 
     private fun toast(msg: String) {
-        ApplicationContextHandler.context?.toast(msg, Toast.LENGTH_LONG)
-                ?: loge("Can't toast for context == null: $msg")
+        AndroidSchedulers.mainThread().createWorker().schedule {
+            ApplicationContextHandler.context?.toast(msg, Toast.LENGTH_LONG)
+                    ?: loge("Can't toast for context == null: $msg")
+        }
     }
 
     private fun toastDebug(f: String, vararg args: Any?) {
         debug {
-            toast("$TAG: ${f.format(args)}")
+            toast("$TAG: ${f.format(*args)}")
         }
     }
 }

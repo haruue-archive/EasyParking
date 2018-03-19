@@ -21,6 +21,7 @@ fun debug(context: Context? = null, r: () -> Unit) {
 }
 
 fun release(context: Context? = null, r: () -> Unit) {
+    ApplicationContextHandler.context = context
     if (!isDebug) {
         r()
     }
