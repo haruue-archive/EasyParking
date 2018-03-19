@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">Easy Parking Lot Manager</string>
+    <string name="app_name">易停 (停车场管理)</string>
+    <string name="app_name_base">易停</string>
+    <string name="app_name_postfix">(停车场管理)</string>
+    <string name="loading">请稍候…</string>
+    <string name="load_cached_manager">正在加载缓存…</string>
+    <string name="load_connect_server">正在与服务器通信…</string>
+    <string name="login_success">授权验证成功</string>
+    <string name="login_failed">授权验证失败，请点击下方按钮重试</string>
+    <string name="login_needed">正在跳转到登录界面…</string>
+    <string name="login">登录</string>
+    <string name="relogin">重新登录</string>
+    <string name="retry">重试</string>
+    <string name="tip_enter_id_password">请输入停车场ID与密码</string>
+    <string name="lot_id">停车场ID</string>
+    <string name="password">密码</string>
+    <string name="confirm">确认</string>
 </resources>
