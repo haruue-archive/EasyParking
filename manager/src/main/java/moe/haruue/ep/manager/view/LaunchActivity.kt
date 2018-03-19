@@ -53,7 +53,7 @@ class LaunchActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQ_LOGIN -> {
-                if (requestCode == Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK) {
                     // do nothing
                 } else {
                     finish()
