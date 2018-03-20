@@ -55,4 +55,5 @@ dependencies {
     api "io.reactivex:rxjava:$rxjava_version"
     api "moe.haruue.kotlin:utils:$haruue_kotlin_utils_version"
     api "moe.haruue.kotlin:utils-support:$haruue_kotlin_utils_version"
+    api "com.journeyapps:zxing-android-embedded:$zxing_android_embedded_version"
 }
