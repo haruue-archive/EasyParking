@@ -15,4 +15,10 @@
     <string name="lot_id">停车场ID</string>
     <string name="password">密码</string>
     <string name="confirm">确认</string>
+    <string name="status">状态</string>
+    <string name="qr_code">二维码</string>
+    <string name="current_lot_status">当前停车场状态</string>
+    <string name="entry">入口</string>
+    <string name="exit">出口</string>
+    <string name="tip_long_click_refresh">发生错误，长按屏幕刷新</string>
 </resources>

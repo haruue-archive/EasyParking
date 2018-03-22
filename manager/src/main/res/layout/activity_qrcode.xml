@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="m"
+            type="moe.haruue.ep.manager.viewmodel.qrcode.QRCodeViewModel"/>
+        <import type="android.view.View"/>
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black">
+
+        <ImageView
+            android:id="@+id/qr"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_centerInParent="true"
+            app:bitmap="@{m.qrcode}"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/qr"
+            android:text="@{m.title}"
+            tools:text="停车请扫码"
+            android:layout_centerHorizontal="true"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:layout_marginBottom="20dp"/>
+
+        <ProgressBar
+            android:id="@android:id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:minHeight="3dp"
+            android:layout_marginTop="50dp"
+            android:layout_below="@id/qr"
+            android:progressDrawable="@drawable/progress_horizontal_bg_white"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progress="@{m.progress}"
+            android:max="100"
+            tools:progress="90"/>
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@android:id/progress"
+            android:textColor="@android:color/white"
+            android:text="@{m.error}"
+            tools:text="正在加载..."/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/status"
+            android:textColor="@android:color/white"
+            android:text="@string/tip_long_click_refresh"
+            android:visibility="@{m.error == null || m.error.equals(``) ? View.GONE : View.VISIBLE}"/>
+
+    </RelativeLayout>
+
+</layout>
