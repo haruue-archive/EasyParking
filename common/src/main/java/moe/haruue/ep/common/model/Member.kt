@@ -9,9 +9,21 @@ import com.google.gson.annotations.SerializedName
 data class Member(
         @SerializedName("_id") var id: String,
         @SerializedName("username") var username: String,
-        @SerializedName("email") var email: String = "",
+        @SerializedName("email") private var _email: String?,
         @SerializedName("emailVerified") var isEmailVerified: Boolean = false,
-        @SerializedName("mobile") var mobile: String = "",
+        @SerializedName("mobile") private var _mobile: String?,
         @SerializedName("mobileVerified") var isMobileVerified: Boolean = false,
-        @SerializedName("cars") var cars: List<Car> = listOf()
-)
+        @SerializedName("cars") private var _cars: List<Car>?
+) {
+    var email: String
+        get() = _email ?: ""
+        set(value) { _email = value }
+
+    var mobile: String
+        get() = _mobile ?: ""
+        set(value) { _mobile = value }
+
+    var cars: List<Car>
+        get() = _cars ?: listOf()
+        set(value) { _cars = value }
+}

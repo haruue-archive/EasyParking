@@ -26,5 +26,7 @@
                   android:label="@string/app_name"/>
         <activity android:name=".view.QRCodeActivity"
                   android:theme="@style/AppTheme.Fullscreen"/>
+        <activity android:name=".view.SpotActivity"/>
+        <activity android:name=".view.SpotEditActivity"/>
     </application>
 </manifest>
