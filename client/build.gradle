@@ -50,18 +50,47 @@ dependencies {
     kapt "com.android.databinding:compiler:$android_plugin_version"
 }
 
-def ksFile = rootProject.file('signing.properties')
-def props = new Properties()
-if (ksFile.canRead()) {
-    props.load(new FileInputStream(ksFile))
-    if (props != null) {
-        android.signingConfigs.sign.storeFile file(props['KEYSTORE_FILE'])
-        android.signingConfigs.sign.storePassword props['KEYSTORE_PASSWORD']
-        android.signingConfigs.sign.keyAlias props['KEYSTORE_ALIAS']
-        android.signingConfigs.sign.keyPassword props['KEYSTORE_ALIAS_PASSWORD']
+def signFile = rootProject.file('signing.properties')
+def signProps = new Properties()
+if (signFile.canRead()) {
+    signProps.load(new FileInputStream(signFile))
+    if (signProps != null) {
+        android.signingConfigs.sign.storeFile file(signProps['KEYSTORE_FILE'])
+        android.signingConfigs.sign.storePassword signProps['KEYSTORE_PASSWORD']
+        android.signingConfigs.sign.keyAlias signProps['KEYSTORE_ALIAS']
+        android.signingConfigs.sign.keyPassword signProps['KEYSTORE_ALIAS_PASSWORD']
     } else {
         println 'some entries in \'signing.properties\' not found!'
     }
 } else {
     println '\'signing.properties\' not found!'
+}
+
+def keyFile = project.file('key.properties')
+def keyProps = new Properties()
+if (keyFile.canRead()) {
+    keyProps.load(new FileInputStream(keyFile))
+    if (keyProps != null) {
+        android.defaultConfig.manifestPlaceholders.put("AMAP_API_KEY", keyProps['amap.apikey'])
+    } else {
+        throw new IllegalStateException(
+                """
+Please config amap sdk
+See: http://lbs.amap.com/api/android-sdk/gettingstarted
+Register a amap account and download the sdk file into client/libs,
+and put your amap apikey into client/key.properites like
+
+    amap.apikey=YOUR_API_KEY_HERE
+""")
+    }
+} else {
+    throw new IllegalStateException(
+            """
+Please config amap sdk
+See: http://lbs.amap.com/api/android-sdk/gettingstarted
+Register a amap account and download the sdk file into client/libs,
+and put your amap apikey into client/key.properites like
+
+    amap.apikey=YOUR_API_KEY_HERE
+""")
 }
