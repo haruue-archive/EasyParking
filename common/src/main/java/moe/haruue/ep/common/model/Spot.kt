@@ -10,7 +10,7 @@ import moe.haruue.util.kotlin.parcelableCreatorOf
  * @author Haruue Icymoon haruue@caoyue.com.cn
  */
 data class Spot(
-        @SerializedName("_id") val id: String,
+        @SerializedName("id") val id: String,
         @SerializedName("location") val location: String,
         @SerializedName("price") val price: Double,
         @SerializedName("type") val type: Int,
@@ -39,6 +39,14 @@ data class Spot(
         @Suppress("unused")
         @JvmField
         val CREATOR = parcelableCreatorOf<Spot>()
+
+        @JvmStatic
+        fun typeStringOf(type: Int) = when (type) {
+            0, 1 -> "小型车"
+            2 -> "中型车"
+            in 3..Integer.MAX_VALUE -> "大型车"
+            else -> throw IllegalArgumentException("invalid type value: $type")
+        }
     }
 
 }

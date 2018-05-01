@@ -3,6 +3,7 @@ package moe.haruue.ep.common.util
 import android.databinding.ObservableArrayList
 import android.databinding.ObservableList
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import java.lang.ref.WeakReference
 
 /**
@@ -15,7 +16,13 @@ class AdapterArrayListListener<T : ObservableList<*>>(
 
     val adapterReference: WeakReference<RecyclerView.Adapter<*>> = WeakReference(adapter)
     inline val adapter: RecyclerView.Adapter<*>?
-        get() = adapterReference.get()
+        get() {
+            val instance = adapterReference.get()
+            if (instance == null) {
+                Log.w("AALL", "adapter == null")
+            }
+            return instance
+        }
 
     override fun onChanged(sender: T?) {
         adapter?.notifyDataSetChanged()

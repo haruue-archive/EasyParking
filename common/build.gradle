@@ -57,4 +57,7 @@ dependencies {
     api "moe.haruue.kotlin:utils:$haruue_kotlin_utils_version"
     api "moe.haruue.kotlin:utils-support:$haruue_kotlin_utils_version"
     api "com.journeyapps:zxing-android-embedded:$zxing_android_embedded_version"
+    api 'moe.shizuku.preference:preference:2.2.3'
+    api 'moe.shizuku.preference:preference-dialog-android:2.2.3'
+    api 'moe.shizuku.preference:preference-simplemenu:2.2.3'
 }

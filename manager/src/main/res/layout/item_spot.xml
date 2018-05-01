@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@{m.logId == null ? `空闲` : `占用`}"
+            android:text="@{m.logId == null ? `空闲` : (m.logId.equals(`1`) ? `自管` : `占用`)}"
             tools:text="空闲"
             android:textSize="12sp"/>
 

@@ -28,4 +28,24 @@ data class Log(
         const val STATUS_REMOVED = 2
         const val STATUS_CANCELED = 3
     }
+
+    var statusText: String?
+        get() {
+            return when (status) {
+                0 -> "预约中"
+                1 -> "停放中"
+                2 -> "已移除"
+                3 -> "已取消"
+                else -> "未知"
+            }
+        }
+        set(value) {
+            status = when (value) {
+                "预约中" -> 0
+                "停放中" -> 1
+                "已移除" -> 2
+                "已取消" -> 3
+                else -> throw IllegalArgumentException("unexpected statusText: $value")
+            }
+        }
 }

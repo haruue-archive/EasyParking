@@ -8,20 +8,20 @@ import moe.haruue.ep.common.util.mutableLiveDataOf
  *
  * @author Haruue Icymoon haruue@caoyue.com.cn
  */
-class SpotItemViewModel : ViewModel() {
+open class SpotItemViewModel : ViewModel() {
 
     val id = mutableLiveDataOf<String>()
     val location = mutableLiveDataOf<String>()
     val price = mutableLiveDataOf<Double>()
-    val type = mutableLiveDataOf<Int>()
+    val type = mutableLiveDataOf(1)
     val logId = mutableLiveDataOf<String>()
 
     var data: Spot? = null
         set(value) {
             field = value
             if (value != null) {
-                id.postValue(value.id)
-                location.postValue(value.id)
+                id.value = value.id
+                location.postValue(value.location)
                 price.postValue(value.price)
                 type.postValue(value.type)
                 logId.postValue(value.logId)
@@ -29,7 +29,7 @@ class SpotItemViewModel : ViewModel() {
                 id.postValue(null)
                 location.postValue(null)
                 price.postValue(null)
-                type.postValue(null)
+                type.postValue(1)
                 logId.postValue(null)
             }
         }

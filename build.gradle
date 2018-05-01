@@ -9,7 +9,7 @@ buildscript {
         min_sdk_version = 21
         // dependencies versions
         android_plugin_version = '3.2.0-alpha07'
-        kotlin_version = '1.2.21'
+        kotlin_version = '1.2.31'
         support_version = '27.1.0'
         architecture_version = '1.1.0'
         room_version = '1.0.0'
@@ -22,7 +22,7 @@ buildscript {
         zxing_android_embedded_version = '3.6.0'
         haruue_kotlin_utils_version = '0.1.1'
         // server url
-        server_base_url = "http://192.168.1.163/ep/v1/"
+        server_base_url = "http://10.24.6.101/ep/v1/"
     }
     repositories {
         google()

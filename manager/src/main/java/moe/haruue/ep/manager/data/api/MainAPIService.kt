@@ -2,6 +2,7 @@ package moe.haruue.ep.manager.data.api
 
 import moe.haruue.ep.common.data.api.APIResult
 import moe.haruue.ep.common.data.api.APIServiceHolder
+import moe.haruue.ep.common.model.Log
 import moe.haruue.ep.common.model.Lot
 import moe.haruue.ep.manager.BuildConfig
 import retrofit2.http.Field
@@ -24,9 +25,15 @@ interface MainAPIService {
               @Field("password") password: String,
               @Field("extra") extra: String): Observable<APIResult<String>>
 
+    @POST("lot/manage/log")
+    @FormUrlEncoded
+    fun log(@Field("id") id: String,
+              @Field("password") password: String,
+              @Field("logId") logId: String): Observable<APIResult<Log>>
+
     @POST("lot/info")
     @FormUrlEncoded
-    fun info(@Field("id") id: String): Observable<Lot>
+    fun info(@Field("id") id: String): Observable<APIResult<Lot>>
 
     @POST("lot/manage/spot/add")
     @FormUrlEncoded
@@ -35,19 +42,19 @@ interface MainAPIService {
                 @Field("spotId") spotId: String,
                 @Field("location") location: String,
                 @Field("price") price: Double,
-                @Field("type") type: Int): Observable<Lot>
+                @Field("type") type: Int): Observable<APIResult<Lot>>
 
     @POST("lot/manage/spot/remove")
     @FormUrlEncoded
     fun removeSpot(@Field("id") id: String,
                    @Field("password") password: String,
-                   @Field("spotId") spotId: String): Observable<Lot>
+                   @Field("spotId") spotId: String): Observable<APIResult<Lot>>
 
     @POST("lot/manage/spot/status")
     @FormUrlEncoded
     fun updateSpotStatus(@Field("id") id: String,
                          @Field("password") password: String,
                          @Field("spotId") spotId: String,
-                         @Field("status") newStatus: String): Observable<Lot>
+                         @Field("status") newStatus: String): Observable<APIResult<Lot>>
 
 }

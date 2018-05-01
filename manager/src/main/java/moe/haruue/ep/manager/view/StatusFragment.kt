@@ -1,5 +1,7 @@
 package moe.haruue.ep.manager.view
 
+import android.app.Activity
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -23,6 +25,7 @@ import moe.haruue.ep.manager.databinding.ItemSpotBinding
 import moe.haruue.ep.manager.viewmodel.manager.ManagerRepository
 import moe.haruue.ep.manager.viewmodel.status.StatusViewModel
 import moe.haruue.util.kotlin.support.startActivity
+import moe.haruue.util.kotlin.support.startActivityForResult
 import rx.android.schedulers.AndroidSchedulers
 
 /**
@@ -30,6 +33,11 @@ import rx.android.schedulers.AndroidSchedulers
  * @author Haruue Icymoon haruue@caoyue.com.cn
  */
 class StatusFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+
+    companion object {
+        const val REQ_VIEW_SPOT = 1
+        const val REQ_ADD_SPOT = 2
+    }
 
     lateinit var binding: FragmentStatusBinding
     val viewModel = StatusViewModel()
@@ -60,7 +68,7 @@ class StatusFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                         .apiSubscribe("StatusFragment#onRefresh") {
                             onNext = {
                                 adapter.list.clear()
-                                adapter.list.addAll(it.spots)
+                                adapter.list.addAll(it.data.spots)
                             }
                             onAPIError = {
                                 if (it.code == 401 || it.errno == 70001 /*noSuchLot*/) {
@@ -81,13 +89,29 @@ class StatusFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     fun toSpotSummary(spot: Spot) {
-        startActivity<SpotActivity> {
+        startActivityForResult<SpotActivity>(REQ_VIEW_SPOT) {
             putExtra(SpotActivity.EXTRA_SPOT, spot)
         }
     }
 
     fun toAddSpot() {
-        startActivity<SpotEditActivity>()
+        startActivityForResult<SpotEditActivity>(REQ_ADD_SPOT)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQ_ADD_SPOT -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    onRefresh()
+                }
+            }
+            REQ_VIEW_SPOT -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    onRefresh()
+                }
+            }
+        }
     }
 
     class Adapter(
@@ -131,16 +155,14 @@ class StatusFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                         holder.show()
                     }
                     holder.itemView.setOnClickListener {
-                        holder.itemView.setOnClickListener {
-                            holder.binding.m?.data?.let {
-                                onSpotSummaryCallback(it)
-                            } ?: Log.e("StatusFragment", "" +
-                                    "error in onBindViewHolder#item click listener, " +
-                                    "viewmodel == ${holder.binding.m}, spot == $it, " +
-                                    "position == $position",
-                                    NullPointerException("viewmodel == ${holder.binding.m}, " +
-                                            "spot == $it, "))
-                        }
+                        holder.binding.m?.data?.let {
+                            onSpotSummaryCallback(it)
+                        } ?: Log.e("StatusFragment", "" +
+                                "error in onBindViewHolder#item click listener, " +
+                                "viewmodel == ${holder.binding.m}, spot == $it, " +
+                                "position == $position",
+                                NullPointerException("viewmodel == ${holder.binding.m}, " +
+                                        "spot == $it, "))
                     }
                 }
                 is AddViewHolder -> {
