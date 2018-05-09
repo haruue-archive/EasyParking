@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="m"
+            type="moe.haruue.ep.view.launch.LaunchViewModel"/>
+        <import type="android.view.View"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/center"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/center"
+            android:layout_marginBottom="50dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name_base"
+                android:textColor="@color/launch_title_color"
+                android:textSize="30sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{m.id}"/>
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@android:id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:minHeight="3dp"
+            android:layout_marginTop="50dp"
+            android:layout_below="@id/center"
+            android:progressDrawable="@drawable/progress_horizontal_bg_tp"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progress="@{m.progress}"
+            android:max="100"
+            tools:progress="90"/>
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@android:id/progress"
+            android:textColor="@color/launch_subtitle_color"
+            android:text="@{m.status}"
+            tools:text="正在加载..."/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:visibility="@{m.needRetry ? View.VISIBLE : View.GONE}"
+            tools:visibility="visible">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/retry"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:onClick="@{() -> m.checkLogin()}"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/relogin"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:onClick="@{() -> m.setNeedLogin()}"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>

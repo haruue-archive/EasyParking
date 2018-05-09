@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="m"
+            type="moe.haruue.ep.view.main.MainViewModel"/>
+    </data>
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorAccent"
+                android:text="this is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\nthis is body of main activity\n"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:fitsSystemWindows="true">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:background="@drawable/bg_searchbar"
+                    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawableEnd="@drawable/ic_search_gray_24dp"
+                        android:background="@android:color/transparent"
+                        android:hint="搜索停车场"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="#888888"
+                        android:layout_marginStart="-15dp"
+                        android:layout_marginEnd="15dp"
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"/>
+
+
+                </android.support.v7.widget.Toolbar>
+
+            </LinearLayout>
+
+        </android.support.design.widget.CoordinatorLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/nav"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:headerLayout="@layout/layout_nav_header"
+            android:fitsSystemWindows="false"
+            app:menu="@menu/nav"/>
+
+    </android.support.v4.widget.DrawerLayout>
+
+</layout>

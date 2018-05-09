@@ -28,11 +28,9 @@ interface MainAPIService {
                      @Field("persist") persist: Boolean = true): Observable<APIResult<Member>>
 
     @POST("account/logout")
-    @FormUrlEncoded
     fun accountLogout(): Observable<APIResult<Nothing>>
 
     @POST("account/refresh")
-    @FormUrlEncoded
     fun accountRefresh(): Observable<APIResult<Member>>
 
     @POST("account/register")

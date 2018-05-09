@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">Easy Parking</string>
+    <string name="app_name">易停</string>
+    <string name="app_name_base">易停</string>
+    <string name="retry">重试</string>
+    <string name="relogin">重新登录</string>
 </resources>
