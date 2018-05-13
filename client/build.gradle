@@ -48,6 +48,9 @@ dependencies {
     kapt "android.arch.lifecycle:compiler:$architecture_version"
     kapt "android.arch.persistence.room:compiler:$room_version"
     kapt "com.android.databinding:compiler:$android_plugin_version"
+    implementation "com.amap.api:navi-3dmap:$amap_version"
+    implementation "com.amap.api:search:$amap_version"
+    implementation "com.amap.api:location:$amap_version"
 }
 
 def signFile = rootProject.file('signing.properties')

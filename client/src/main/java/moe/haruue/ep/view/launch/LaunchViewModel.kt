@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import moe.haruue.ep.common.data.subscriber.apiSubscribe
 import moe.haruue.ep.common.util.mutableLiveDataOf
 import moe.haruue.ep.data.api.MainAPIService
+import rx.android.schedulers.AndroidSchedulers
 
 /**
  *
@@ -34,6 +35,7 @@ class LaunchViewModel : ViewModel() {
         progress.postValue(10)
         status.postValue("正在与服务器通讯...")
         MainAPIService.with { it.accountRefresh() }
+                .observeOn(AndroidSchedulers.mainThread())
                 .apiSubscribe("LaunchViewModel#checkLogin") {
                     onNext = {
                         confirmed.postValue(true)

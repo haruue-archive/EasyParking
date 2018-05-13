@@ -26,4 +26,12 @@ data class Member(
     var cars: List<Car>
         get() = _cars ?: listOf()
         set(value) { _cars = value }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Member && id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
 }

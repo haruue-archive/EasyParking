@@ -33,6 +33,9 @@ interface MainAPIService {
     @POST("account/refresh")
     fun accountRefresh(): Observable<APIResult<Member>>
 
+    @POST("account/info")
+    fun accountInfo(): Observable<APIResult<Member>>
+
     @POST("account/register")
     @FormUrlEncoded
     fun accountRegister(@Field("username") username: String,
