@@ -51,6 +51,7 @@ dependencies {
     implementation "com.amap.api:navi-3dmap:$amap_version"
     implementation "com.amap.api:search:$amap_version"
     implementation "com.amap.api:location:$amap_version"
+    implementation "com.oasisfeng.condom:library:$condom_version"
 }
 
 def signFile = rootProject.file('signing.properties')

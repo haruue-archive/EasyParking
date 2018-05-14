@@ -39,6 +39,7 @@
                   android:windowSoftInputMode="adjustUnspecified|stateHidden"/>
         <activity android:name=".view.lot.LotInfoActivity"/>
 
-        <service android:name="com.amap.api.location.APSService"/>
+        <service android:name="com.amap.api.location.APSService"
+                 android:process=":amap"/>
     </application>
 </manifest>

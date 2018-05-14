@@ -5,7 +5,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.design.widget.AppBarLayout
 import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.CoordinatorLayout
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +15,7 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.graphics.drawable.toBitmap
@@ -23,10 +26,12 @@ import com.amap.api.location.AMapLocationListener
 import com.amap.api.maps.AMap
 import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.CameraUpdateFactory
+import com.amap.api.maps.MapView
 import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.Marker
 import com.amap.api.maps.model.MarkerOptions
+import com.oasisfeng.condom.CondomContext
 import kotlinx.android.synthetic.main.activity_main.*
 import moe.haruue.ep.BuildConfig
 import moe.haruue.ep.R
@@ -54,7 +59,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
     }
 
     private object LastRefresh {
-        private var latLng: LatLng = LatLng(0.0, 0.0)
+        private var latLng: LatLng? = null
         private var time: Long = 0
 
         fun needRefresh(latLng: LatLng) = this.latLng != latLng || System.currentTimeMillis() - time >= 60_000L
@@ -62,6 +67,10 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
         fun refreshed(latLng: LatLng) {
             time = System.currentTimeMillis()
             this.latLng = latLng
+        }
+
+        fun reset() {
+            time = 0
         }
     }
 
@@ -93,6 +102,8 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
     }
 
 
+    private lateinit var map: MapView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -102,6 +113,15 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
 
             }
         }
+
+        map = MapView(CondomContext.wrap(this@MainActivity, "MapView")).apply {
+            layoutParams = CoordinatorLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
+                behavior = AppBarLayout.ScrollingViewBehavior()
+            }
+            isFocusable = true
+            isFocusableInTouchMode = true
+        }
+        coordinator.addView(map, 0)
 
         setSupportActionBar(toolbar)
         supportActionBar!!.apply {
@@ -207,6 +227,11 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        LastRefresh.reset()
     }
 
     private fun refreshNavHeader(forceFetch: Boolean = false) {
