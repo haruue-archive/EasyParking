@@ -7,15 +7,11 @@ import android.util.Log
 import android.widget.Toast
 import com.google.gson.Gson
 import moe.haruue.ep.common.data.api.APIError
-import moe.haruue.ep.common.util.ApplicationContextHandler
-import moe.haruue.ep.common.util.debug
-import moe.haruue.ep.common.util.release
-import moe.haruue.ep.common.util.toast
+import moe.haruue.ep.common.util.*
 import retrofit2.HttpException
 import rx.Observable
 import rx.Subscriber
 import rx.Subscription
-import rx.android.schedulers.AndroidSchedulers
 import java.io.IOException
 
 typealias OnErrorCallback<T> = (e: T) -> Unit
@@ -187,7 +183,7 @@ class APISubscriber<T> private constructor(
     }
 
     private fun toast(msg: String) {
-        AndroidSchedulers.mainThread().createWorker().schedule {
+        runOnUiThread {
             ApplicationContextHandler.context?.toast(msg, Toast.LENGTH_LONG)
                     ?: loge("Can't toast for context == null: $msg")
         }

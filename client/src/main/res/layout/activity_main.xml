@@ -22,7 +22,9 @@
                 android:id="@+id/map"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
 
             <LinearLayout
                 android:id="@+id/toolbar_container"
@@ -41,6 +43,7 @@
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
                     <EditText
+                        android:id="@+id/search"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:drawableEnd="@drawable/ic_search_gray_24dp"
@@ -56,6 +59,16 @@
                         android:inputType="text"/>
 
                 </android.support.v7.widget.Toolbar>
+                
+                <LinearLayout
+                    android:id="@+id/history"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_margin="3dp"
+                    android:visibility="gone">
+
+                </LinearLayout>
 
             </LinearLayout>
 

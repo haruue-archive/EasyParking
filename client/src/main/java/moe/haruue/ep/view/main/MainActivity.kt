@@ -7,8 +7,13 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.graphics.drawable.toBitmap
 import com.amap.api.location.AMapLocation
@@ -28,6 +33,8 @@ import moe.haruue.ep.R
 import moe.haruue.ep.common.data.subscriber.apiSubscribe
 import moe.haruue.ep.common.model.Lot
 import moe.haruue.ep.common.model.Member
+import moe.haruue.ep.common.util.hideInputMethod
+import moe.haruue.ep.common.util.showInputMethod
 import moe.haruue.ep.data.api.MainAPIService
 import moe.haruue.ep.databinding.ActivityMainBinding
 import moe.haruue.ep.view.account.LoginActivity
@@ -44,6 +51,18 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
 
     companion object {
         val REQ_LOGIN = 0x1
+    }
+
+    private object LastRefresh {
+        private var latLng: LatLng = LatLng(0.0, 0.0)
+        private var time: Long = 0
+
+        fun needRefresh(latLng: LatLng) = this.latLng != latLng || System.currentTimeMillis() - time >= 60_000L
+
+        fun refreshed(latLng: LatLng) {
+            time = System.currentTimeMillis()
+            this.latLng = latLng
+        }
     }
 
     private val locationClient by lazy {
@@ -93,6 +112,11 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             subtitle = ""
             setNavigationIcon(R.drawable.ic_menu_gray_24dp)
             setNavigationOnClickListener {
+                if (search.hasFocus()) {
+//                    search.removeFocus()
+                    map.requestFocus()
+                    return@setNavigationOnClickListener
+                }
                 drawer.openDrawer(Gravity.START)
             }
         }
@@ -133,6 +157,30 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                     }
                 }
             }
+
+            search.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    refreshSearchHistoryView()
+                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+
+            search.setOnEditorActionListener { v, actionId, event ->
+                when (actionId) {
+                    EditorInfo.IME_ACTION_SEARCH -> {
+                        val keyword = v?.text?.toString()?.trim()
+                        if (keyword != null && keyword.isNotBlank()) {
+                            SearchHistoryRepository.insert(keyword)
+                            // TODO: Go to search page here
+                        }
+                        exitSearch()
+                        v.text = ""
+                        true
+                    }
+                    else -> false
+                }
+            }
         }
 
         BottomSheetBehavior.from(sheet).isHideable = false
@@ -141,6 +189,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             locationClient.startLocation()
             moveToMyLocation = true
         }
+
     }
 
     override fun onResume() {
@@ -148,6 +197,16 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
         map.onResume()
         locationClient.startLocation()
         refreshNavHeader()
+        search.post {
+            exitSearch()
+            search.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    enterSearch()
+                } else {
+                    exitSearch()
+                }
+            }
+        }
     }
 
     private fun refreshNavHeader(forceFetch: Boolean = false) {
@@ -172,6 +231,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
     }
 
     private fun refreshLots(location: LatLng, city: String) {
+        if (!LastRefresh.needRefresh(location)) return
         MainAPIService.with { it.lotQueryGeographic(longitude = location.longitude, latitude = location.latitude, city = city) }
                 .map {
                     it.data.filter { !lotMarkers.containsValue(it) }.map {
@@ -189,6 +249,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                         it.forEach { (lot, markerOptions) ->
                             lotMarkers[m.addMarker(markerOptions)] = lot
                         }
+                        LastRefresh.refreshed(location)
                     }
                     onAPIError = {
                         toast(it.message)
@@ -240,6 +301,39 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
         }
     }
 
+    private fun enterSearch() {
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_gray_24dp)
+        history.visibility = View.VISIBLE
+        search.showInputMethod()
+        refreshSearchHistoryView()
+    }
+
+    private fun refreshSearchHistoryView() {
+        SearchHistoryRepository.find(search.text?.toString() ?: "") {
+            history.removeAllViews()
+            it.map { createSearchHistoryItemView(it.keyword, history) }.forEach { history.addView(it) }
+        }
+    }
+
+    private fun createSearchHistoryItemView(keyword: String, parent: ViewGroup): View {
+        val layout = layoutInflater.inflate(R.layout.item_search_history, parent, false)
+        val text = layout.findViewById<TextView>(R.id.keyword)
+        text.text = keyword
+        layout.setOnClickListener {
+            search.setText(keyword)
+            search.setSelection(keyword.length)
+        }
+        return layout
+    }
+
+    private fun exitSearch() {
+        toolbar.setNavigationIcon(R.drawable.ic_menu_gray_24dp)
+        history.visibility = View.GONE
+        search.hideInputMethod()
+//        search.removeFocus()
+        map.requestFocus()
+    }
+
     override fun onPause() {
         super.onPause()
         map.onPause()
@@ -260,6 +354,10 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
     override fun onBackPressed() {
         when {
             drawer.isDrawerOpen(Gravity.START) -> drawer.closeDrawer(Gravity.START)
+            search.hasFocus() -> {
+//                search.removeFocus()
+                map.requestFocus()
+            }
             else -> super.onBackPressed()
         }
     }
