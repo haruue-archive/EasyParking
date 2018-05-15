@@ -33,19 +33,24 @@ import com.amap.api.maps.model.Marker
 import com.amap.api.maps.model.MarkerOptions
 import com.oasisfeng.condom.CondomContext
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_lot_info_sheet.*
 import moe.haruue.ep.BuildConfig
 import moe.haruue.ep.R
 import moe.haruue.ep.common.data.subscriber.apiSubscribe
 import moe.haruue.ep.common.model.Lot
 import moe.haruue.ep.common.model.Member
+import moe.haruue.ep.common.model.Spot
 import moe.haruue.ep.common.util.hideInputMethod
 import moe.haruue.ep.common.util.showInputMethod
+import moe.haruue.ep.common.util.toPriceString
 import moe.haruue.ep.data.api.MainAPIService
 import moe.haruue.ep.databinding.ActivityMainBinding
 import moe.haruue.ep.view.account.LoginActivity
 import moe.haruue.ep.view.account.MemberRepository
-import moe.haruue.ep.view.lot.LotInfoActivity
-import moe.haruue.util.kotlin.*
+import moe.haruue.util.kotlin.dp2px
+import moe.haruue.util.kotlin.startActivityForResult
+import moe.haruue.util.kotlin.statusBarHeight
+import moe.haruue.util.kotlin.toast
 import rx.android.schedulers.AndroidSchedulers
 
 /**
@@ -100,7 +105,6 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             val cars by lazy { v.findViewById(R.id.cars) as TextView }
         }
     }
-
 
     private lateinit var map: MapView
 
@@ -170,12 +174,13 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             }
 
             setOnInfoWindowClickListener {
-                val lot: Lot? = lotMarkers[it]
-                lot?.run {
-                    startActivity<LotInfoActivity> {
-                        putExtra(LotInfoActivity.EXTRA_LOT, lot)
-                    }
-                }
+//                val lot: Lot? = lotMarkers[it]
+//                lot?.run {
+//                    startActivity<LotInfoActivity> {
+//                        putExtra(LotInfoActivity.EXTRA_LOT, lot)
+//                    }
+//                }
+                showLotInfo(it)
             }
 
             search.addTextChangedListener(object : TextWatcher {
@@ -203,9 +208,15 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             }
         }
 
-        BottomSheetBehavior.from(sheet).isHideable = false
+        map.map.setOnMapTouchListener {
+            if (bottomSheet.state == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
+        }
 
-        fab.setOnClickListener {
+        bottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
+
+        fabMyLocation.setOnClickListener {
             locationClient.startLocation()
             moveToMyLocation = true
         }
@@ -260,11 +271,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
         MainAPIService.with { it.lotQueryGeographic(longitude = location.longitude, latitude = location.latitude, city = city) }
                 .map {
                     it.data.filter { !lotMarkers.containsValue(it) }.map {
-                        it to MarkerOptions().apply {
-                            position(LatLng(it.geographic.latitude, it.geographic.longitude))
-                            title(it.name)
-                            snippet(it.location)
-                        }
+                        it to generateMarkerOptionsForLot(it)
                     }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -289,6 +296,30 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                         Log.e("MAPI", "MainActivity#refreshLogs", it)
                     }
                 }
+    }
+
+    fun addLotToMap(lot: Lot): Marker {
+        if (lotMarkers.containsValue(lot)) {
+            for ((m, l) in lotMarkers) {
+                if (l == lot) {
+                    return m
+                }
+            }
+            error("lotMarkers contains $lot but we can't find it. lotMarkers: $lotMarkers")
+        } else {
+            val options = generateMarkerOptionsForLot(lot)
+            val marker = map.map.addMarker(options)
+            lotMarkers[marker] = lot
+            return marker
+        }
+    }
+
+    private fun generateMarkerOptionsForLot(lot: Lot): MarkerOptions {
+        return MarkerOptions().apply {
+            position(LatLng(lot.geographic.latitude, lot.geographic.longitude))
+            title(lot.name)
+            snippet(lot.location)
+        }
     }
 
     override fun onLocationChanged(location: AMapLocation?) {
@@ -383,6 +414,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
 //                search.removeFocus()
                 map.requestFocus()
             }
+            bottomSheet.state != BottomSheetBehavior.STATE_HIDDEN -> bottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
             else -> super.onBackPressed()
         }
     }
@@ -400,6 +432,30 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                 }
             }
         }
+    }
+
+    val bottomSheet by lazy {
+        BottomSheetBehavior.from(sheet)
+    }
+
+    fun showLotInfo(marker: Marker) {
+        val lot = lotMarkers[marker]
+        lotName.text = lot?.name
+        lotDescription.text = lot?.description
+        lotLocation.text = lot?.location
+        lotType.text = lot?.type?.let { Spot.typeStringOf(it) } ?: "暂不可用"
+        val availableSpots = lot?.spots?.filter { it.logId == null } ?: listOf()
+        lotSpotCount.text = "剩余 ${availableSpots.size} 个车位"
+        lotPrice.text = if (availableSpots.size > 0) {
+            val price = availableSpots.sumByDouble { it.price } / availableSpots.size
+            "平均每小时 ${price.toPriceString()} 元"
+        } else {
+            "暂不可用"
+        }
+        bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheet.isHideable = true
+        map.map.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
+        marker.showInfoWindow()
     }
 
 }
