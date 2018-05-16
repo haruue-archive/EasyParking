@@ -23,10 +23,7 @@ import com.amap.api.location.AMapLocation
 import com.amap.api.location.AMapLocationClient
 import com.amap.api.location.AMapLocationClientOption
 import com.amap.api.location.AMapLocationListener
-import com.amap.api.maps.AMap
-import com.amap.api.maps.AMapOptions
-import com.amap.api.maps.CameraUpdateFactory
-import com.amap.api.maps.MapView
+import com.amap.api.maps.*
 import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.Marker
@@ -52,6 +49,7 @@ import moe.haruue.util.kotlin.startActivityForResult
 import moe.haruue.util.kotlin.statusBarHeight
 import moe.haruue.util.kotlin.toast
 import rx.android.schedulers.AndroidSchedulers
+import kotlin.concurrent.thread
 
 /**
  *
@@ -219,6 +217,28 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
         fabMyLocation.setOnClickListener {
             locationClient.startLocation()
             moveToMyLocation = true
+        }
+
+        fabParking.setOnClickListener {
+            if (bottomSheet.state != BottomSheetBehavior.STATE_HIDDEN && ::currentLotMarker.isInitialized) {
+                // TODO: start park activity
+            } else {
+                // find a available park lot
+                toast("正在寻找附近停车场...")
+                thread(start = true) {
+                    val myLocation = locationClient.lastKnownLocation.let { LatLng(it.latitude, it.longitude) }
+                    val marker = lotMarkers.filterValues { it.spots.any { it.logId == null } }.keys.toMutableList().minBy {
+                        AMapUtils.calculateLineDistance(myLocation, it.position)
+                    }
+                    runOnUiThread {
+                        if (marker != null) {
+                            showLotInfo(marker)
+                        } else {
+                            toast("没找到合适的停车场")
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -438,7 +458,10 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
         BottomSheetBehavior.from(sheet)
     }
 
+    private lateinit var currentLotMarker: Marker
+
     fun showLotInfo(marker: Marker) {
+        currentLotMarker = marker
         val lot = lotMarkers[marker]
         lotName.text = lot?.name
         lotDescription.text = lot?.description
