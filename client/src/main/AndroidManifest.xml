@@ -37,6 +37,7 @@
         <activity android:name=".view.main.MainActivity"
                   android:theme="@style/AppTheme.MainActivity"
                   android:windowSoftInputMode="adjustUnspecified|stateHidden"/>
+        <activity android:name=".view.search.SearchActivity"/>
 
         <service android:name="com.amap.api.location.APSService"
                  android:process=":amap"/>

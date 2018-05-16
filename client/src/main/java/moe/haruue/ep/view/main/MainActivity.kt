@@ -42,8 +42,10 @@ import moe.haruue.ep.common.util.showInputMethod
 import moe.haruue.ep.common.util.toPriceString
 import moe.haruue.ep.data.api.MainAPIService
 import moe.haruue.ep.databinding.ActivityMainBinding
+import moe.haruue.ep.model.toLatLng
 import moe.haruue.ep.view.account.LoginActivity
 import moe.haruue.ep.view.account.MemberRepository
+import moe.haruue.ep.view.search.SearchActivity
 import moe.haruue.util.kotlin.dp2px
 import moe.haruue.util.kotlin.startActivityForResult
 import moe.haruue.util.kotlin.statusBarHeight
@@ -59,6 +61,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
 
     companion object {
         val REQ_LOGIN = 0x1
+        val REQ_SEARCH = 0x2
     }
 
     private object LastRefresh {
@@ -93,6 +96,12 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
     private val lotMarkers = mutableMapOf<Marker, Lot>()
 
     private var moveToMyLocation: Boolean = true  // move to my location when it first located
+        set(value) {
+            field = value
+            runOnUiThread {
+                toast("定位中...")
+            }
+        }
 
     private val navHeaderViews by lazy {
         val v = nav.getHeaderView(0)
@@ -134,12 +143,10 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             subtitle = ""
             setNavigationIcon(R.drawable.ic_menu_gray_24dp)
             setNavigationOnClickListener {
-                if (search.hasFocus()) {
-//                    search.removeFocus()
-                    map.requestFocus()
-                    return@setNavigationOnClickListener
+                when {
+                    search.hasFocus() -> map.requestFocus() /*search.removeFocus()*/
+                    else -> drawer.openDrawer(Gravity.START)
                 }
-                drawer.openDrawer(Gravity.START)
             }
         }
         nav.getHeaderView(0).setPadding(0, statusBarHeight, 0, 0)
@@ -195,7 +202,10 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                         val keyword = v?.text?.toString()?.trim()
                         if (keyword != null && keyword.isNotBlank()) {
                             SearchHistoryRepository.insert(keyword)
-                            // TODO: Go to search page here
+                            startActivityForResult<SearchActivity>(REQ_SEARCH) {
+                                putExtra(SearchActivity.EXTRA_KEYWORD, keyword)
+                                putExtra(SearchActivity.EXTRA_MY_LOCATION, locationClient.lastKnownLocation.toLatLng())
+                            }
                         }
                         exitSearch()
                         v.text = ""
@@ -226,7 +236,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                 // find a available park lot
                 toast("正在寻找附近停车场...")
                 thread(start = true) {
-                    val myLocation = locationClient.lastKnownLocation.let { LatLng(it.latitude, it.longitude) }
+                    val myLocation = locationClient.lastKnownLocation.toLatLng()
                     val marker = lotMarkers.filterValues { it.spots.any { it.logId == null } }.keys.toMutableList().minBy {
                         AMapUtils.calculateLineDistance(myLocation, it.position)
                     }
@@ -305,15 +315,15 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                     }
                     onAPIError = {
                         toast(it.message)
-                        Log.w("MAPI", "MainActivity#refreshLogs: $it")
+                        Log.w("MAPI", "MainActivity#refreshLots: $it")
                     }
                     onNetworkError = {
                         toast("网络连接失败: ${it.localizedMessage}， 请检查网络连接。")
-                        Log.d("MAPI", "MainActivity#refreshLogs", it)
+                        Log.d("MAPI", "MainActivity#refreshLots", it)
                     }
                     onOtherError = {
                         toast("获取停车场信息时发生未知错误: ${it.message}")
-                        Log.e("MAPI", "MainActivity#refreshLogs", it)
+                        Log.e("MAPI", "MainActivity#refreshLots", it)
                     }
                 }
     }
@@ -449,6 +459,13 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             REQ_LOGIN -> {
                 if (resultCode == Activity.RESULT_OK) {
                     refreshNavHeader(true)
+                }
+            }
+            REQ_SEARCH -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val lot = data!!.getParcelableExtra<Lot>(SearchActivity.RESULT_LOT)
+                    val marker = addLotToMap(lot)
+                    showLotInfo(marker)
                 }
             }
         }
