@@ -36,6 +36,12 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         setSupportActionBar(toolbar)
+        supportActionBar!!.apply {
+            setDisplayHomeAsUpEnabled(true)
+        }
+        toolbar.apply {
+            setNavigationOnClickListener { finish() }
+        }
 
         setResult(Activity.RESULT_CANCELED)
 

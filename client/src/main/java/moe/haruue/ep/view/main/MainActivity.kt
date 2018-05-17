@@ -1,9 +1,11 @@
 package moe.haruue.ep.view.main
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.BottomSheetBehavior
@@ -45,12 +47,14 @@ import moe.haruue.ep.databinding.ActivityMainBinding
 import moe.haruue.ep.model.toLatLng
 import moe.haruue.ep.view.account.LoginActivity
 import moe.haruue.ep.view.account.MemberRepository
+import moe.haruue.ep.view.order.OrderActivity
 import moe.haruue.ep.view.search.SearchActivity
 import moe.haruue.util.kotlin.dp2px
 import moe.haruue.util.kotlin.startActivityForResult
 import moe.haruue.util.kotlin.statusBarHeight
 import moe.haruue.util.kotlin.toast
 import rx.android.schedulers.AndroidSchedulers
+import java.io.ByteArrayOutputStream
 import kotlin.concurrent.thread
 
 /**
@@ -62,6 +66,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
     companion object {
         val REQ_LOGIN = 0x1
         val REQ_SEARCH = 0x2
+        val REQ_ORDER = 0x3
     }
 
     private object LastRefresh {
@@ -98,8 +103,10 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
     private var moveToMyLocation: Boolean = true  // move to my location when it first located
         set(value) {
             field = value
-            runOnUiThread {
-                toast("定位中...")
+            if (value) {
+                runOnUiThread {
+                    toast("定位中...")
+                }
             }
         }
 
@@ -151,7 +158,38 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
         }
         nav.getHeaderView(0).setPadding(0, statusBarHeight, 0, 0)
 
+        search.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                refreshSearchHistoryView()
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        search.setOnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_SEARCH -> {
+                    val keyword = v?.text?.toString()?.trim()
+                    if (keyword != null && keyword.isNotBlank()) {
+                        SearchHistoryRepository.insert(keyword)
+                        startActivityForResult<SearchActivity>(
+                                requestCode = REQ_SEARCH,
+                                options = ActivityOptions.makeSceneTransitionAnimation(
+                                        this@MainActivity, toolbar, "toolbar").toBundle()) {
+                            putExtra(SearchActivity.EXTRA_KEYWORD, keyword)
+                            putExtra(SearchActivity.EXTRA_MY_LOCATION, locationClient.lastKnownLocation.toLatLng())
+                        }
+                    }
+                    exitSearch()
+                    v.text = ""
+                    true
+                }
+                else -> false
+            }
+        }
         map.onCreate(savedInstanceState)
+
+        toast("定位中...")
 
         map.map.apply {
             isTrafficEnabled = true
@@ -159,7 +197,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
 
             uiSettings.apply {
                 isMyLocationButtonEnabled = false
-                isCompassEnabled = true
+                isCompassEnabled = false
                 isScaleControlsEnabled = true
                 isZoomControlsEnabled = true
                 zoomPosition = AMapOptions.ZOOM_POSITION_RIGHT_CENTER
@@ -188,37 +226,10 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                 showLotInfo(it)
             }
 
-            search.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                    refreshSearchHistoryView()
+            setOnMapTouchListener {
+                if (bottomSheet.state == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            })
-
-            search.setOnEditorActionListener { v, actionId, event ->
-                when (actionId) {
-                    EditorInfo.IME_ACTION_SEARCH -> {
-                        val keyword = v?.text?.toString()?.trim()
-                        if (keyword != null && keyword.isNotBlank()) {
-                            SearchHistoryRepository.insert(keyword)
-                            startActivityForResult<SearchActivity>(REQ_SEARCH) {
-                                putExtra(SearchActivity.EXTRA_KEYWORD, keyword)
-                                putExtra(SearchActivity.EXTRA_MY_LOCATION, locationClient.lastKnownLocation.toLatLng())
-                            }
-                        }
-                        exitSearch()
-                        v.text = ""
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }
-
-        map.map.setOnMapTouchListener {
-            if (bottomSheet.state == BottomSheetBehavior.STATE_EXPANDED) {
-                bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
             }
         }
 
@@ -231,7 +242,25 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
 
         fabParking.setOnClickListener {
             if (bottomSheet.state != BottomSheetBehavior.STATE_HIDDEN && ::currentLotMarker.isInitialized) {
-                // TODO: start park activity
+                map.map.moveCamera(CameraUpdateFactory.newLatLng(currentLotMarker.position))
+                map.map.getMapScreenShot(object : AMap.OnMapScreenShotListener {
+                    override fun onMapScreenShot(bm: Bitmap?) {}
+                    override fun onMapScreenShot(bm: Bitmap?, status: Int) {
+                        mapScreenshot.setImageBitmap(bm)
+                        mapScreenshot.visibility = View.VISIBLE
+                        startActivityForResult<OrderActivity>(
+                                requestCode = REQ_ORDER,
+                                options = ActivityOptions.makeSceneTransitionAnimation(this@MainActivity,
+                                        mapScreenshot, "mapScreenshot").toBundle()) {
+                            putExtra(OrderActivity.EXTRA_LOT, lotMarkers[currentLotMarker])
+                            putExtra(OrderActivity.EXTRA_MAP_SCREENSHOT, bm?.let {
+                                val s = ByteArrayOutputStream()
+                                it.compress(Bitmap.CompressFormat.WEBP, 50, s)
+                                s.toByteArray()
+                            })
+                        }
+                    }
+                })
             } else {
                 // find a available park lot
                 toast("正在寻找附近停车场...")
@@ -467,6 +496,9 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                     val marker = addLotToMap(lot)
                     showLotInfo(marker)
                 }
+            }
+            REQ_ORDER -> {
+                mapScreenshot.visibility = View.GONE
             }
         }
     }

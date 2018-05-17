@@ -44,6 +44,7 @@ class SearchActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView<ActivitySearchBinding>(this, R.layout.activity_search).apply {
             m = ViewModelProviders.of(this@SearchActivity)[SearchViewModel::class.java].apply {
+                setLifecycleOwner(this@SearchActivity::getLifecycle)
                 myLocation = intent.getParcelableExtra(EXTRA_MY_LOCATION)
                 keyword.value = intent.getStringExtra(EXTRA_KEYWORD)
                 keyword.observe(this@SearchActivity::getLifecycle) {

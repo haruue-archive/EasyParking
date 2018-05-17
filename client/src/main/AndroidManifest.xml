@@ -38,6 +38,8 @@
                   android:theme="@style/AppTheme.MainActivity"
                   android:windowSoftInputMode="adjustUnspecified|stateHidden"/>
         <activity android:name=".view.search.SearchActivity"/>
+        <activity android:name=".view.order.OrderActivity"
+                  android:theme="@style/AppTheme.MainActivity"/>
 
         <service android:name="com.amap.api.location.APSService"
                  android:process=":amap"/>

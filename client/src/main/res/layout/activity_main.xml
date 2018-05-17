@@ -28,6 +28,14 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"/>-->
 
+            <ImageView
+                android:id="@+id/mapScreenshot"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:transitionName="mapScreenshot"
+                android:scaleType="centerCrop"/>
+
             <LinearLayout
                 android:id="@+id/toolbar_container"
                 android:layout_width="match_parent"
@@ -41,6 +49,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:background="@drawable/bg_searchbar"
+                    android:transitionName="toolbar"
                     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
