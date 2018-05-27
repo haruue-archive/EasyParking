@@ -1,7 +1,7 @@
 package moe.haruue.ep.view.account
 
-import moe.haruue.ep.common.data.api.APIError
 import moe.haruue.ep.common.data.subscriber.apiSubscribe
+import moe.haruue.ep.common.exception.APIErrorException
 import moe.haruue.ep.common.model.Member
 import moe.haruue.ep.data.api.MainAPIService
 import rx.android.schedulers.AndroidSchedulers
@@ -25,8 +25,6 @@ object MemberRepository {
         fun cb(member: Member, hasError: Boolean = false, needReLogin: Boolean = false, message: String = "", error: Throwable? = null) {
             callback(member, hasError, needReLogin, message, error)
         }
-        /** re-wrap [APIError] as [RuntimeException] */
-        class APIErrorException(val err: APIError): RuntimeException()
 
         if (!refresh && ::member.isInitialized) {
             cb(member)

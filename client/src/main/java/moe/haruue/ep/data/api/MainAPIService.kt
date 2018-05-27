@@ -58,7 +58,7 @@ interface MainAPIService {
     @POST("account/car/add")
     @FormUrlEncoded
     fun accountCarAdd(@Field("id") id: String,
-                      @Field("type") type: String): Observable<APIResult<Member>>
+                      @Field("type") type: Int): Observable<APIResult<Member>>
 
     @POST("account/car/delete")
     @FormUrlEncoded

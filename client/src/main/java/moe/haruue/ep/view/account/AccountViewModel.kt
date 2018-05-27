@@ -1,7 +1,6 @@
 package moe.haruue.ep.view.account
 
 import android.arch.lifecycle.ViewModel
-import android.util.Log
 import moe.haruue.ep.common.data.subscriber.apiSubscribe
 import moe.haruue.ep.common.util.mutableLiveDataOf
 import moe.haruue.ep.data.api.MainAPIService
@@ -111,7 +110,7 @@ class AccountViewModel : ViewModel() {
                             when (it.ref) {
                                 "username" -> usernameError.postValue(it.message)
                                 "password" -> passwordError.postValue(it.message)
-                                else -> status.postValue("")
+                                else -> status.postValue(it.message)
                             }
                         }
                         status.postValue("注册失败: ${it.message}\n请重试")

@@ -18,5 +18,5 @@ data class APIError(
         @SerializedName("status") val status: String,
         @SerializedName("message") val message: String,
         @SerializedName("errno") val errno: Int,
-        @SerializedName("ref") val ref: String
+        @SerializedName("ref") val ref: String?
 )

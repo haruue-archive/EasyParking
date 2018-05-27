@@ -40,6 +40,8 @@
         <activity android:name=".view.search.SearchActivity"/>
         <activity android:name=".view.order.OrderActivity"
                   android:theme="@style/AppTheme.MainActivity"/>
+        <activity android:name=".view.car.AddCarActivity"
+                  android:windowSoftInputMode="adjustResize"/>
 
         <service android:name="com.amap.api.location.APSService"
                  android:process=":amap"/>
