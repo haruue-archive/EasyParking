@@ -208,7 +208,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             setOnMarkerClickListener {
                 lotMarkers.forEach { marker, _ ->
                     if (marker == it) {
-                        it.showInfoWindow()
+                        showLotInfo(it)
                     } else {
                         it.hideInfoWindow()
                     }

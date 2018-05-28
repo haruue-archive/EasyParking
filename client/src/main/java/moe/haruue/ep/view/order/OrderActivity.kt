@@ -83,8 +83,16 @@ class OrderActivity : AppCompatActivity() {
                 } else {
                     0.0
                 }
-                confirmed.observe(this@OrderActivity::getLifecycle) { onSuccess() }
-                needLogin.observe(this@OrderActivity::getLifecycle) { toLogin() }
+                confirmed.observe(this@OrderActivity::getLifecycle) {
+                    if (it == true) {
+                        onSuccess()
+                    }
+                }
+                needLogin.observe(this@OrderActivity::getLifecycle) {
+                    if (it == true) {
+                        toLogin()
+                    }
+                }
             }
         }
 
