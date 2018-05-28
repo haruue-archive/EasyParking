@@ -111,11 +111,19 @@ class OrderActivity : AppCompatActivity() {
         }
 
         carSelect.setOnClickListener {
+            binding.m?.car?.value?.let { currentCar ->
+                val i = cars.indexOfFirst { it.id == currentCar }
+                if (i >= 0) carsSelectPopupWindow.setSelectedIndex(i)
+            }
             carsSelectPopupWindow.show(carSelect, carSelect.parent as View, 0)
         }
 
         spotSelect.setOnClickListener {
             if (spots.size > 0) {
+                binding.m?.spotId?.value?.let { currentSpot ->
+                    val i = spots.indexOfFirst { it.id == currentSpot }
+                    if (i >= 0) spotsSelectPopupWindow.setSelectedIndex(i)
+                }
                 spotsSelectPopupWindow.show(spotSelect, spotSelect.parent as View, 0)
             } else {
                 toast("暂无可用停车位")
