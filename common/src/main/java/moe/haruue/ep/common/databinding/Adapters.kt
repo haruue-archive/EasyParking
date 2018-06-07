@@ -5,6 +5,7 @@ import android.databinding.BindingAdapter
 import android.databinding.InverseBindingAdapter
 import android.graphics.Bitmap
 import android.support.design.widget.TextInputLayout
+import android.support.v4.widget.SwipeRefreshLayout
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -102,3 +103,8 @@ fun setActivated(view: View, activated: Boolean) {
 
 @InverseBindingAdapter(attribute = "android:activated")
 fun isActivated(view: View) = view.isActivated
+
+@BindingAdapter("app:onRefresh")
+fun setOnRefreshListener(swipe: SwipeRefreshLayout, listener: SwipeRefreshLayout.OnRefreshListener) {
+    swipe.setOnRefreshListener(listener)
+}

@@ -47,7 +47,7 @@ class QRCodeViewModel(
                             progress.postValue(70)
                             if (!it.message.isBlank()) {
                                 val encoder = BarcodeEncoder()
-                                val content = "${BuildConfig.SERVER_URL}download?${URLEncoder.encode(it.data, "UTF-8")}"
+                                val content = "${BuildConfig.SERVER_URL}download?token=${URLEncoder.encode(it.data, "UTF-8")}"
                                 return@map encoder.encodeBitmap(
                                         content,
                                         BarcodeFormat.QR_CODE, 400, 400)

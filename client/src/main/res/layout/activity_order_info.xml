@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="m"
+            type="moe.haruue.ep.view.log.OrderInfoViewModel"/>
+        <import type="android.view.View"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/center"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"/>
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            app:title="订单信息"
+            android:background="@color/colorPrimary"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/toolbar">
+
+            <LinearLayout
+                android:id="@+id/button_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignParentBottom="true"
+                android:padding="10dp"
+                android:gravity="end">
+
+                <!-- 0ordered 1parked 2removed 3canceled -->
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="取消订单"
+                    android:onClick="@{() -> m.onCancelOrder()}"
+                    android:visibility="@{m.status == 0 ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible"
+                    style="@style/Widget.AppCompat.Button"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="扫码停车"
+                    android:onClick="@{() -> m.onPark()}"
+                    android:visibility="@{m.status == 0 ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible"
+                    style="@style/Widget.AppCompat.Button.Colored"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="扫码提车"
+                    android:onClick="@{() -> m.onRemove()}"
+                    android:visibility="@{m.status == 1 ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible"
+                    style="@style/Widget.AppCompat.Button.Colored"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="支付订单"
+                    android:onClick="@{() -> m.onPay()}"
+                    android:visibility="@{m.status == 2 || m.status == 3 ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible"
+                    style="@style/Widget.AppCompat.Button.Colored"/>
+
+
+            </LinearLayout>
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipe"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_above="@id/button_container"
+                app:onRefresh="@{() -> m.onRefresh()}">
+
+                <android.support.v4.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/toolbar"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="15dp"
+                            android:text="@{m.carId}"
+                            tools:text="赣B 8B117"
+                            android:textSize="24sp"
+                            android:textColor="@android:color/black"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="15dp">
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:singleLine="true"
+                                      android:textAppearance="@style/Preference_TextAppearanceMaterialSubhead"
+                                      android:ellipsize="marquee"
+                                      android:text="@{m.lotName}"
+                                      tools:text="停车场"/>
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:textAppearance="?android:attr/textAppearanceSmall"
+                                      android:textColor="?android:attr/textColorSecondary"
+                                      android:maxLines="10"
+                                      android:text="@{m.lotLocation}"
+                                      tools:text="停车场位置，停车场位置"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="15dp">
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:singleLine="true"
+                                      android:textAppearance="@style/Preference_TextAppearanceMaterialSubhead"
+                                      android:ellipsize="marquee"
+                                      android:text="@{m.spotId}"
+                                      tools:text="A1"/>
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:textAppearance="?android:attr/textAppearanceSmall"
+                                      android:textColor="?android:attr/textColorSecondary"
+                                      android:maxLines="10"
+                                      android:text="@{m.spotLocation}"
+                                      tools:text="停车位位置"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="15dp">
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:singleLine="true"
+                                      android:textAppearance="@style/Preference_TextAppearanceMaterialSubhead"
+                                      android:ellipsize="marquee"
+                                      android:text="时价"/>
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:textAppearance="?android:attr/textAppearanceSmall"
+                                      android:textColor="?android:attr/textColorSecondary"
+                                      android:maxLines="10"
+                                      android:text="@{m.priceText}"
+                                      tools:text="10.3 元/小时"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="15dp">
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:singleLine="true"
+                                      android:textAppearance="@style/Preference_TextAppearanceMaterialSubhead"
+                                      android:ellipsize="marquee"
+                                      android:text="费用"/>
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:textAppearance="?android:attr/textAppearanceSmall"
+                                      android:textColor="?android:attr/textColorSecondary"
+                                      android:maxLines="10"
+                                      android:text="@{m.feeText}"
+                                      tools:text="10.3 元"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="15dp">
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:singleLine="true"
+                                      android:textAppearance="@style/Preference_TextAppearanceMaterialSubhead"
+                                      android:ellipsize="marquee"
+                                      android:text="状态"/>
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:textAppearance="?android:attr/textAppearanceSmall"
+                                      android:textColor="?android:attr/textColorSecondary"
+                                      android:maxLines="10"
+                                      android:text="@{m.statusText}"
+                                      tools:text="已预订"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="15dp">
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:textAppearance="?android:attr/textAppearanceSmall"
+                                      android:textColor="?android:attr/textColorSecondary"
+                                      android:maxLines="10"
+                                      android:text="@{`订单号: ` + m.id}"
+                                      tools:text="订单号: xxxxxxxxxx"/>
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:textAppearance="?android:attr/textAppearanceSmall"
+                                      android:textColor="?android:attr/textColorSecondary"
+                                      android:maxLines="10"
+                                      android:text="@{`下单时间: ` + m.createTimeText}"
+                                      tools:text="下单时间: xxxxxxxxxx"/>
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:textAppearance="?android:attr/textAppearanceSmall"
+                                      android:textColor="?android:attr/textColorSecondary"
+                                      android:maxLines="10"
+                                      android:text="@{`停车时间: ` + m.startTimeText}"
+                                      tools:text="停车时间: xxxxxxxxxx"/>
+
+                            <TextView android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:textAppearance="?android:attr/textAppearanceSmall"
+                                      android:textColor="?android:attr/textColorSecondary"
+                                      android:maxLines="10"
+                                      android:text="@{`结单时间: ` + m.endTimeText}"
+                                      tools:text="结单时间: xxxxxxxxxx"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </android.support.v4.widget.NestedScrollView>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+            <FrameLayout
+                android:id="@+id/progress_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#7fff"
+                android:visibility="@{m.progress != 0 &amp;&amp; m.progress != 100 ? View.VISIBLE : View.GONE}"
+                tools:visibility="gone">
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:progress="@{m.progress}"/>
+
+            </FrameLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</layout>

@@ -21,7 +21,7 @@ buildscript {
         rxandroid_version = '1.2.1'
         zxing_android_embedded_version = '3.6.0'
         amap_version = 'latest.integration'
-        haruue_kotlin_utils_version = '0.1.1'
+        haruue_kotlin_utils_version = '0.1.2'
         condom_version = '2.2.0'
         // server url
         server_base_url = "http://10.24.6.101/ep/v1/"

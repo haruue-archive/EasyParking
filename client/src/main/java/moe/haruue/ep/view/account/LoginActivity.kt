@@ -56,8 +56,8 @@ class LoginActivity : AppCompatActivity() {
                     data?.apply {
                         val username = data.getStringExtra("username")
                         val password = data.getStringExtra("password")
-                        binding.account?.username?.postValue(username)
-                        binding.account?.password?.postValue(password)
+                        binding.account?.username?.value = username
+                        binding.account?.password?.value = password
                         binding.account?.checkLogin()
                     }
                 }

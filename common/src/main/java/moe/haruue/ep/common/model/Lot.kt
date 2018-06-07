@@ -22,6 +22,7 @@ data class Lot(
 ) : Parcelable {
 
     companion object {
+        @Suppress("unused")
         @JvmField val CREATOR = parcelableCreatorOf<Lot>()
     }
 

@@ -20,8 +20,7 @@ data class GeographicLocation(
     @Suppress("unused") /*Parcelable*/
     constructor(parcel: Parcel) : this(
             parcel.readDouble(),
-            parcel.readDouble()) {
-    }
+            parcel.readDouble())
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeDouble(longitude)

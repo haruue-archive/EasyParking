@@ -18,6 +18,7 @@ import moe.haruue.ep.databinding.ActivityOrderBinding
 import moe.haruue.ep.view.account.LoginActivity
 import moe.haruue.ep.view.account.MemberRepository
 import moe.haruue.ep.view.car.AddCarActivity
+import moe.haruue.ep.view.log.OrderInfoActivity
 import moe.haruue.ep.view.lot.LotRepository
 import moe.haruue.util.kotlin.startActivity
 import moe.shizuku.preference.widget.SimpleMenuPopupWindow
@@ -83,9 +84,12 @@ class OrderActivity : AppCompatActivity() {
                 } else {
                     0.0
                 }
-                confirmed.observe(this@OrderActivity::getLifecycle) {
-                    if (it == true) {
-                        onSuccess()
+                spotLog.observe(this@OrderActivity::getLifecycle) {
+                    it?.let { onSuccess(it) }
+                }
+                status.observe(this@OrderActivity::getLifecycle) {
+                    if (!it.isNullOrBlank()) {
+                        toast(it!!)
                     }
                 }
                 needLogin.observe(this@OrderActivity::getLifecycle) {
@@ -136,7 +140,7 @@ class OrderActivity : AppCompatActivity() {
         MemberRepository.with { member, hasError, needReLogin, message, error ->
             if (!hasError) {
                 cars.clear()
-                cars.addAll(member.cars)
+                cars.addAll(member.cars.filter { it.logId == null })
                 val c = cars.map { it.id }.toMutableList()
                 c.add("添加车牌号...")
                 carsSelectPopupWindow.setEntries(c.toTypedArray())
@@ -183,8 +187,12 @@ class OrderActivity : AppCompatActivity() {
         startActivity<LoginActivity>()
     }
 
-    fun onSuccess() {
-        // TODO: go to order info page here
+    fun onSuccess(log: moe.haruue.ep.common.model.Log) {
+        MemberRepository.fetchAsync()
+        startActivity<OrderInfoActivity> {
+            putExtra(OrderInfoActivity.EXTRA_LOG, log)
+        }
+        finishAfterTransition()
     }
 
 }

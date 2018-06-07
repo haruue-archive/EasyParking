@@ -1,8 +1,10 @@
 package moe.haruue.ep.view.account
 
+import android.util.Log
 import moe.haruue.ep.common.data.subscriber.apiSubscribe
 import moe.haruue.ep.common.exception.APIErrorException
 import moe.haruue.ep.common.model.Member
+import moe.haruue.ep.common.util.debug
 import moe.haruue.ep.data.api.MainAPIService
 import rx.android.schedulers.AndroidSchedulers
 
@@ -13,6 +15,14 @@ import rx.android.schedulers.AndroidSchedulers
 object MemberRepository {
 
     lateinit var member: Member
+
+    fun fetchAsync() {
+        with(true) { member, _, _, _, _ ->
+            debug {
+                Log.d("MemberRepository", "MemberRepository#fetchAsync: member = $member")
+            }
+        }
+    }
 
     fun with(
             refresh: Boolean = false,

@@ -102,4 +102,7 @@ interface MainAPIService {
     @FormUrlEncoded
     fun lotParkCancel(@Field("logId") logId: String): Observable<APIResult<Log>>
 
+    @POST("lot/park/refresh")
+    @FormUrlEncoded
+    fun lotParkRefresh(@Field("logId") logId: String): Observable<APIResult<Log>>
 }

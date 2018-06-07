@@ -7,6 +7,7 @@
         <variable
             name="m"
             type="moe.haruue.ep.view.order.OrderViewModel"/>
+        <import type="android.view.View"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -59,14 +60,14 @@
             app:behavior_skipCollapsed="false"
             android:background="@android:color/white">
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout android:orientation="vertical"
                               android:layout_width="match_parent"
-                              android:layout_height="match_parent">
+                              android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -150,8 +151,21 @@
 
                 </LinearLayout>
 
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#7fff"
+                    android:visibility="@{m.progress != 0 &amp;&amp; m.progress != 100 ? View.VISIBLE : View.GONE}">
 
-            </LinearLayout>
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:progress="@{m.progress}"/>
+
+                </FrameLayout>
+
+            </FrameLayout>
 
         </android.support.v4.widget.NestedScrollView>
 
