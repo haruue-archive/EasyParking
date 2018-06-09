@@ -14,7 +14,7 @@ import rx.android.schedulers.AndroidSchedulers
  */
 object MemberRepository {
 
-    lateinit var member: Member
+    private var member: Member? = null
 
     fun fetchAsync() {
         with(true) { member, _, _, _, _ ->
@@ -36,8 +36,10 @@ object MemberRepository {
             callback(member, hasError, needReLogin, message, error)
         }
 
-        if (!refresh && ::member.isInitialized) {
-            cb(member)
+        val cm = member
+        if (!refresh && cm != null) {
+            cb(cm)
+            return
         }
 
         val errMember = Member("ERR", "ERR", "ERR", false, "0", false, listOf())
@@ -46,8 +48,9 @@ object MemberRepository {
                 .observeOn(AndroidSchedulers.mainThread())
                 .apiSubscribe("MemberRepository#with") {
                     onNext = {
-                        member = it.data
-                        cb(member)
+                        val m = it.data
+                        member = m
+                        cb(m)
                     }
                     onAPIError = {
                         val needReLogin = it.code == 401
@@ -63,6 +66,13 @@ object MemberRepository {
 
     }
 
+    fun clear() {
+        member = null
+    }
+
+    fun update(m: Member) {
+        this.member = m
+    }
 
 
 }

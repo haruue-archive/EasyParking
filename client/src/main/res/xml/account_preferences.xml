@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:key="root">
+
+    <Preference
+        android:title="修改密码"
+        android:key="password"/>
+
+    <Preference
+        android:title="绑定邮箱"
+        android:key="email"/>
+
+    <!--<Preference
+        android:title="绑定手机"
+        android:key="mobile"/>-->
+
+    <Preference
+        android:title="车辆管理"
+        android:key="car"/>
+
+    <Preference
+        android:title="登出"
+        android:key="logout"/>
+
+</PreferenceScreen>

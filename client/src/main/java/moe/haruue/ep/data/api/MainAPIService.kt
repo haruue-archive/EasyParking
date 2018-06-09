@@ -28,7 +28,7 @@ interface MainAPIService {
                      @Field("persist") persist: Boolean = true): Observable<APIResult<Member>>
 
     @POST("account/logout")
-    fun accountLogout(): Observable<APIResult<Nothing>>
+    fun accountLogout(): Observable<APIResult<Nothing?>>
 
     @POST("account/refresh")
     fun accountRefresh(): Observable<APIResult<Member>>
@@ -53,7 +53,7 @@ interface MainAPIService {
     @POST("account/update/password")
     @FormUrlEncoded
     fun accountUpdatePassword(@Field("old") old: String,
-                              @Field("new") new: String): Observable<APIResult<Nothing>>
+                              @Field("new") new: String): Observable<APIResult<Nothing?>>
 
     @POST("account/car/add")
     @FormUrlEncoded

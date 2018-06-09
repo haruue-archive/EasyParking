@@ -26,6 +26,8 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        MemberRepository.clear()
+
         binding = DataBindingUtil.setContentView<ActivityLoginBinding>(this, R.layout.activity_login).apply {
             setLifecycleOwner(this@LoginActivity::getLifecycle)
             account = ViewModelProviders.of(this@LoginActivity)[AccountViewModel::class.java].apply {

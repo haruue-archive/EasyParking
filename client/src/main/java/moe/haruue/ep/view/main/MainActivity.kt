@@ -49,6 +49,7 @@ import moe.haruue.ep.common.util.toPriceString
 import moe.haruue.ep.data.api.MainAPIService
 import moe.haruue.ep.databinding.ActivityMainBinding
 import moe.haruue.ep.model.toLatLng
+import moe.haruue.ep.view.account.AccountPreferencesActivity
 import moe.haruue.ep.view.account.LoginActivity
 import moe.haruue.ep.view.account.MemberRepository
 import moe.haruue.ep.view.log.OrderListActivity
@@ -66,9 +67,10 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity(), AMapLocationListener {
 
     companion object {
-        val REQ_LOGIN = 0x1
-        val REQ_SEARCH = 0x2
-        val REQ_ORDER = 0x3
+        const val REQ_LOGIN = 0x1
+        const val REQ_SEARCH = 0x2
+        const val REQ_ORDER = 0x3
+        const val REQ_ACCOUNT_PREFERENCES = 0x4
     }
 
     private object LastRefresh {
@@ -167,6 +169,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                     true
                 }
                 R.id.account -> {
+                    startActivityForResult<AccountPreferencesActivity>(REQ_ACCOUNT_PREFERENCES)
                     true
                 }
                 else -> false
@@ -301,6 +304,7 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
         super.onResume()
         map.onResume()
         locationClient.startLocation()
+        drawer.closeDrawer(Gravity.START)
         refreshNavHeader()
         search.post {
             exitSearch()
@@ -511,6 +515,8 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             REQ_LOGIN -> {
                 if (resultCode == Activity.RESULT_OK) {
                     refreshNavHeader(true)
+                } else {
+                    finish()
                 }
             }
             REQ_SEARCH -> {
@@ -522,6 +528,11 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             }
             REQ_ORDER -> {
                 mapScreenshot.visibility = View.GONE
+            }
+            REQ_ACCOUNT_PREFERENCES -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    refreshNavHeader(true)
+                }
             }
         }
     }
