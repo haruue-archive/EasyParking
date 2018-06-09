@@ -25,7 +25,7 @@ buildscript {
         haruue_kotlin_utils_version = '0.1.2'
         condom_version = '2.2.0'
         // server url
-        server_base_url = "http://10.24.6.101/ep/v1/"
+        server_base_url = "https://api.caoyue.com.cn/ep/v1/"
     }
     repositories {
         google()
