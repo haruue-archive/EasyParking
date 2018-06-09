@@ -1,8 +1,10 @@
 package moe.haruue.ep.view.log
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.databinding.ObservableList
 import android.os.Bundle
@@ -19,7 +21,9 @@ import moe.haruue.ep.common.util.formatToDateTime
 import moe.haruue.ep.common.util.toPriceString
 import moe.haruue.ep.common.util.toast
 import moe.haruue.ep.databinding.ActivityOrderListBinding
+import moe.haruue.ep.view.account.LoginActivity
 import moe.haruue.util.kotlin.startActivity
+import moe.haruue.util.kotlin.startActivityForResult
 import android.util.Log as ALog
 
 /**
@@ -27,6 +31,10 @@ import android.util.Log as ALog
  * @author Haruue Icymoon haruue@caoyue.com.cn
  */
 class OrderListActivity : AppCompatActivity() {
+
+    companion object {
+        const val REQ_LOGIN = 0x1
+    }
 
     lateinit var binding: ActivityOrderListBinding
 
@@ -39,6 +47,11 @@ class OrderListActivity : AppCompatActivity() {
                 toast.observe(this@OrderListActivity::getLifecycle) {
                     if (it != null && it.isNotBlank()) {
                         toast(it)
+                    }
+                }
+                needLogin.observe(this@OrderListActivity::getLifecycle) {
+                    if (it == true) {
+                        toLogin()
                     }
                 }
                 list.adapter = Adapter(this@OrderListActivity, orders)
@@ -59,6 +72,22 @@ class OrderListActivity : AppCompatActivity() {
         binding.m?.onRefresh()
     }
 
+    fun toLogin() {
+        startActivityForResult<LoginActivity>(REQ_LOGIN)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQ_LOGIN -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    binding.m?.onRefresh()
+                } else {
+                    finish()
+                }
+            }
+        }
+    }
 
     class Adapter(
             val context: Context,

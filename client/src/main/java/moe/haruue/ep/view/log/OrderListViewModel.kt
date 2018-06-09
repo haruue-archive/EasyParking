@@ -23,7 +23,7 @@ class OrderListViewModel : ViewModel() {
 
     val refreshing = mutableLiveDataOf(false)
     val toast = mutableLiveDataOf<String>()
-    val needLogin = mutableLiveDataOf(true)
+    val needLogin = mutableLiveDataOf(false)
 
     fun onRefresh() {
         refreshing.value = true

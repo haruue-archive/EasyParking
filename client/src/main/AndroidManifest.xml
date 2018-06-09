@@ -55,6 +55,7 @@
                   android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".view.password.ModifyPasswordActivity"
                   android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".view.car.CarListActivity"/>
 
         <service android:name="com.amap.api.location.APSService"
                  android:process=":amap"/>

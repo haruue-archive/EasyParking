@@ -12,8 +12,10 @@ import moe.haruue.ep.R
 import moe.haruue.ep.common.data.subscriber.apiSubscribe
 import moe.haruue.ep.common.util.debug
 import moe.haruue.ep.data.api.MainAPIService
+import moe.haruue.ep.view.car.CarListActivity
 import moe.haruue.ep.view.email.ModifyEmailActivity
 import moe.haruue.ep.view.password.ModifyPasswordActivity
+import moe.haruue.util.kotlin.support.startActivity
 import moe.haruue.util.kotlin.support.startActivityForResult
 import moe.shizuku.preference.PreferenceFragment
 import rx.android.schedulers.AndroidSchedulers
@@ -73,6 +75,7 @@ class AccountPreferencesActivity : AppCompatActivity() {
             }
 
             findPreference("car").setOnPreferenceClickListener {
+                startActivity<CarListActivity>()
                 true
             }
 

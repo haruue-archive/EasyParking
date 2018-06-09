@@ -55,8 +55,6 @@
             android:id="@+id/cars"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:maxLines="1"
             android:ellipsize="end"
             android:textColor="#AAFFFFFF"
             android:text="未绑定车辆"
