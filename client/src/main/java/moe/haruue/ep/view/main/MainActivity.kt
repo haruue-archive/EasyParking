@@ -336,9 +336,11 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                     } else {
                         "no-such-mail-and-no-reply-afcda1c56d5156a4f5w61d1c15@caoyue.com.cn".md5()
                     }
-                    Glide.with(this@MainActivity).load("https://www.gravatar.com/avatar/$avatarUrlToken?d=mp").apply(RequestOptions().apply {
-                        circleCrop()
-                    }).into(avatar)
+                    avatar?.let {
+                        Glide.with(this@MainActivity).load("https://www.gravatar.com/avatar/$avatarUrlToken?d=mp").apply(RequestOptions().apply {
+                            circleCrop()
+                        }).into(it)
+                    }
                 }
                 return@with
             } else {
