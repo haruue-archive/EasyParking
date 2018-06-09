@@ -108,3 +108,8 @@ fun isActivated(view: View) = view.isActivated
 fun setOnRefreshListener(swipe: SwipeRefreshLayout, listener: SwipeRefreshLayout.OnRefreshListener) {
     swipe.setOnRefreshListener(listener)
 }
+
+@BindingAdapter("app:isRefreshing")
+fun isRefreshing(swipe: SwipeRefreshLayout, status: Boolean) {
+    swipe.isRefreshing = status
+}

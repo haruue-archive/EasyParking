@@ -48,6 +48,7 @@
         <activity android:name="com.journeyapps.barcodescanner.CaptureActivity"
                   android:screenOrientation="portrait"
                   tools:replace="screenOrientation"/>
+        <activity android:name=".view.log.OrderListActivity"/>
 
         <service android:name="com.amap.api.location.APSService"
                  android:process=":amap"/>

@@ -5,6 +5,7 @@ import android.net.Uri
 import moe.haruue.ep.common.data.api.APIError
 import moe.haruue.ep.common.data.subscriber.apiSubscribe
 import moe.haruue.ep.common.model.Log
+import moe.haruue.ep.common.util.formatToDateTime
 import moe.haruue.ep.common.util.mutableLiveDataOf
 import moe.haruue.ep.common.util.toPriceString
 import moe.haruue.ep.data.api.MainAPIService
@@ -13,8 +14,6 @@ import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 import android.util.Log as ALog
 
 /**
@@ -36,19 +35,19 @@ class OrderInfoViewModel : ViewModel() {
     var createTime: Long? = null
         set(value) {
             field = value
-            createTimeText.postValue(createTime?.formatToDate() ?: "不可用")
+            createTimeText.postValue(createTime?.formatToDateTime() ?: "不可用")
         }
     val createTimeText = mutableLiveDataOf<String>()
     var startTime: Long? = null
         set(value) {
             field = value
-            startTimeText.postValue(startTime?.formatToDate() ?: "不可用")
+            startTimeText.postValue(startTime?.formatToDateTime() ?: "不可用")
         }
     val startTimeText = mutableLiveDataOf<String>()
     var endTime: Long? = null
         set(value) {
             field = value
-            endTimeText.postValue(endTime?.formatToDate() ?: "不可用")
+            endTimeText.postValue(endTime?.formatToDateTime() ?: "不可用")
         }
     val endTimeText = mutableLiveDataOf<String>()
     var price: Double = 0.0
@@ -74,11 +73,6 @@ class OrderInfoViewModel : ViewModel() {
     val fatal = mutableLiveDataOf(false)
     val dialogConfirm = mutableLiveDataOf<Pair<String, () -> Unit>>()
     val scanQrCode = mutableLiveDataOf<Pair<String, (String) -> Unit>>()
-
-    fun Long.formatToDate(): String {
-        if (this == 0L) return "暂不可用"
-        return SimpleDateFormat.getDateTimeInstance().format(Date(this))
-    }
 
     fun setLog(log: Log) {
         id.value = log.id

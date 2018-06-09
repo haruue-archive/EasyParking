@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/park"
-          android:title="停车"/>
-    <item android:id="@+id/remove"
-          android:title="取车"/>
+    <item android:id="@+id/map"
+          android:title="地图"
+          android:checked="true"
+          android:checkable="true"/>
     <item android:id="@+id/order"
-          android:title="订单"/>
+          android:title="订单"
+          android:checkable="false"/>
     <item android:id="@+id/account"
-          android:title="账户管理"/>
+          android:title="账户管理"
+          android:checkable="false"/>
 
 </menu>

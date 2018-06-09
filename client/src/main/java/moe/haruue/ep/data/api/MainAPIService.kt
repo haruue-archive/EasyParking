@@ -105,4 +105,7 @@ interface MainAPIService {
     @POST("lot/park/refresh")
     @FormUrlEncoded
     fun lotParkRefresh(@Field("logId") logId: String): Observable<APIResult<Log>>
+
+    @POST("lot/park/list")
+    fun lotParkList(): Observable<APIResult<List<Log>>>
 }

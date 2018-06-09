@@ -30,9 +30,12 @@ import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.Marker
 import com.amap.api.maps.model.MarkerOptions
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.oasisfeng.condom.CondomContext
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_lot_info_sheet.*
+import kotlinx.android.synthetic.main.layout_nav_header.*
 import moe.haruue.ep.BuildConfig
 import moe.haruue.ep.R
 import moe.haruue.ep.common.data.subscriber.apiSubscribe
@@ -40,6 +43,7 @@ import moe.haruue.ep.common.model.Lot
 import moe.haruue.ep.common.model.Member
 import moe.haruue.ep.common.model.Spot
 import moe.haruue.ep.common.util.hideInputMethod
+import moe.haruue.ep.common.util.md5
 import moe.haruue.ep.common.util.showInputMethod
 import moe.haruue.ep.common.util.toPriceString
 import moe.haruue.ep.data.api.MainAPIService
@@ -47,12 +51,10 @@ import moe.haruue.ep.databinding.ActivityMainBinding
 import moe.haruue.ep.model.toLatLng
 import moe.haruue.ep.view.account.LoginActivity
 import moe.haruue.ep.view.account.MemberRepository
+import moe.haruue.ep.view.log.OrderListActivity
 import moe.haruue.ep.view.order.OrderActivity
 import moe.haruue.ep.view.search.SearchActivity
-import moe.haruue.util.kotlin.dp2px
-import moe.haruue.util.kotlin.startActivityForResult
-import moe.haruue.util.kotlin.statusBarHeight
-import moe.haruue.util.kotlin.toast
+import moe.haruue.util.kotlin.*
 import rx.android.schedulers.AndroidSchedulers
 import java.io.ByteArrayOutputStream
 import kotlin.concurrent.thread
@@ -157,6 +159,19 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
             }
         }
         nav.getHeaderView(0).setPadding(0, statusBarHeight, 0, 0)
+        nav.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.map -> true
+                R.id.order -> {
+                    startActivity<OrderListActivity>()
+                    true
+                }
+                R.id.account -> {
+                    true
+                }
+                else -> false
+            }
+        }
 
         search.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -311,7 +326,15 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                     username.text = member.username
                     email.text = if (member.email.isNotBlank()) member.email else "未绑定邮箱"
                     mobile.text = if (member.mobile.isNotBlank()) member.mobile else "未绑定手机"
-                    cars.text = if (member.cars.isNotEmpty()) member.cars.joinToString(separator = "\n") else "未绑定车辆"
+                    cars.text = if (member.cars.isNotEmpty()) member.cars.joinToString(separator = "\n") { it.id } else "未绑定车辆"
+                    val avatarUrlToken = if (member.email.isNotBlank()) {
+                        member.email.md5()
+                    } else {
+                        "no-such-mail-and-no-reply-afcda1c56d5156a4f5w61d1c15@caoyue.com.cn".md5()
+                    }
+                    Glide.with(this@MainActivity).load("https://www.gravatar.com/avatar/$avatarUrlToken?d=mp").apply(RequestOptions().apply {
+                        circleCrop()
+                    }).into(avatar)
                 }
                 return@with
             } else {
