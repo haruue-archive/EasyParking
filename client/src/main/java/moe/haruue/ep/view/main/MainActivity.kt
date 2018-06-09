@@ -19,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.inputmethod.EditorInfo
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.graphics.drawable.toBitmap
 import com.amap.api.location.AMapLocation
@@ -35,7 +36,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.oasisfeng.condom.CondomContext
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_lot_info_sheet.*
-import kotlinx.android.synthetic.main.layout_nav_header.*
 import moe.haruue.ep.BuildConfig
 import moe.haruue.ep.R
 import moe.haruue.ep.common.data.subscriber.apiSubscribe
@@ -117,10 +117,11 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
     private val navHeaderViews by lazy {
         val v = nav.getHeaderView(0)
         return@lazy object {
-            val username by lazy { v.findViewById(R.id.username) as TextView }
-            val email by lazy { v.findViewById(R.id.email) as TextView }
-            val mobile by lazy { v.findViewById(R.id.mobile) as TextView }
-            val cars by lazy { v.findViewById(R.id.cars) as TextView }
+            val username by lazy { v.findViewById<TextView>(R.id.username) }
+            val email by lazy { v.findViewById<TextView>(R.id.email) }
+            val mobile by lazy { v.findViewById<TextView>(R.id.mobile) }
+            val cars by lazy { v.findViewById<TextView>(R.id.cars) }
+            val avatar by lazy { v.findViewById<ImageView>(R.id.avatar) }
         }
     }
 
@@ -336,11 +337,9 @@ class MainActivity : AppCompatActivity(), AMapLocationListener {
                     } else {
                         "no-such-mail-and-no-reply-afcda1c56d5156a4f5w61d1c15@caoyue.com.cn".md5()
                     }
-                    avatar?.let {
-                        Glide.with(this@MainActivity).load("https://www.gravatar.com/avatar/$avatarUrlToken?d=mp").apply(RequestOptions().apply {
-                            circleCrop()
-                        }).into(it)
-                    }
+                    Glide.with(this@MainActivity).load("https://www.gravatar.com/avatar/$avatarUrlToken?d=mp").apply(RequestOptions().apply {
+                        circleCrop()
+                    }).into(avatar)
                 }
                 return@with
             } else {
